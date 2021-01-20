@@ -1,0 +1,6 @@
+[submodule "libs/torrentlibs/mpetazzoni/ttorrent"]
+	path = libs/torrentlibs/mpetazzoni/ttorrent
+	url = https://github.com/mpetazzoni/ttorrent/
+[submodule "libs/torrentlibs/atomashpolskiy/bt"]
+	path = libs/torrentlibs/atomashpolskiy/bt
+	url = https://github.com/atomashpolskiy/bt
