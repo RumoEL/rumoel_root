@@ -10,4 +10,8 @@
 	<artifactId>libs</artifactId>
 	<packaging>pom</packaging>
 
+	<modules>
+		<module>torrentlibs/atomashpolskiy/bt</module>
+		<module>torrentlibs/mpetazzoni/ttorrent</module>
+	</modules>
 </project>
