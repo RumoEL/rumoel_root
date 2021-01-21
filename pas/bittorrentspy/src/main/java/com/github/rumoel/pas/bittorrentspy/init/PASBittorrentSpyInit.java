@@ -41,13 +41,19 @@ public class PASBittorrentSpyInit extends Thread {
 					for (TrackedTorrent trackedTorrent : trackedTorrents) {
 						Map<PeerUID, TrackedPeer> trackedPeers = trackedTorrent.getPeers();
 						for (Map.Entry<PeerUID, TrackedPeer> trackedPeerEntry : trackedPeers.entrySet()) {
+							PeerUID id = trackedPeerEntry.getKey();
+							String torrentHash = id.getTorrentHash();
+
 							TrackedPeer trackedPeer = trackedPeerEntry.getValue();
 							ReportForTorrentPeer report = new ReportForTorrentPeer();
 
 							report.setTime(System.currentTimeMillis() / 1000);
-							report.setTorrentHash(trackedPeer.getHexInfoHash());
+							report.setTorrentHash(torrentHash);
 							report.setPeerHash(trackedPeer.getStringPeerId());
 							report.setIp(trackedPeer.getIp());
+							report.setPort(trackedPeer.getPort());
+							// logger.info("ID:{}", id);
+							// logger.info("trackedPeer:{}", trackedPeer);
 							logger.info("{}", report);
 						}
 					}
