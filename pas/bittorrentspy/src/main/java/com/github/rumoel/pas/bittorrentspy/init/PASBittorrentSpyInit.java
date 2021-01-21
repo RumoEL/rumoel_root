@@ -49,11 +49,9 @@ public class PASBittorrentSpyInit extends Thread {
 
 							report.setTime(System.currentTimeMillis() / 1000);
 							report.setTorrentHash(torrentHash);
-							report.setPeerHash(trackedPeer.getStringPeerId());
+							report.setPeerHash(trackedPeer.getHexPeerId());
 							report.setIp(trackedPeer.getIp());
 							report.setPort(trackedPeer.getPort());
-							// logger.info("ID:{}", id);
-							// logger.info("trackedPeer:{}", trackedPeer);
 							logger.info("{}", report);
 						}
 					}
