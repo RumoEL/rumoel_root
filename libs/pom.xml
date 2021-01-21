@@ -13,5 +13,6 @@
 	<modules>
 		<module>torrentlibs/atomashpolskiy/bt</module>
 		<module>torrentlibs/mpetazzoni/ttorrent</module>
+		<module>paslibs</module>
 	</modules>
 </project>

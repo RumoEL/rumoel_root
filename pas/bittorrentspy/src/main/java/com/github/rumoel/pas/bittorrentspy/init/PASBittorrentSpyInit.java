@@ -3,6 +3,8 @@ package com.github.rumoel.pas.bittorrentspy.init;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
 import java.util.ServiceConfigurationError;
 
 import org.slf4j.Logger;
@@ -12,10 +14,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.rumoel.pas.bittorrentspy.config.PASBittorrentSpyConfig;
 import com.github.rumoel.pas.bittorrentspy.header.PASBittorrentSpyHeader;
+import com.github.rumoel.rumoel.libs.pas.torrents.ReportForTorrentPeer;
+import com.turn.ttorrent.common.PeerUID;
+import com.turn.ttorrent.tracker.TrackedPeer;
 import com.turn.ttorrent.tracker.TrackedTorrent;
 import com.turn.ttorrent.tracker.Tracker;
 
-public class PASBittorrentSpyInit {
+public class PASBittorrentSpyInit extends Thread {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 	Tracker tracker;
@@ -27,8 +32,40 @@ public class PASBittorrentSpyInit {
 		PASBittorrentSpyHeader.pasBittorrentSpyInit.startTracker();
 	}
 
+	@Override
+	public void run() {
+		try {
+			do {
+				if (tracker != null) {
+					Collection<TrackedTorrent> trackedTorrents = tracker.getTrackedTorrents();
+					for (TrackedTorrent trackedTorrent : trackedTorrents) {
+						Map<PeerUID, TrackedPeer> trackedPeers = trackedTorrent.getPeers();
+						for (Map.Entry<PeerUID, TrackedPeer> trackedPeerEntry : trackedPeers.entrySet()) {
+							TrackedPeer trackedPeer = trackedPeerEntry.getValue();
+							ReportForTorrentPeer report = new ReportForTorrentPeer();
+
+							report.setTime(System.currentTimeMillis() / 1000);
+							report.setTorrentHash(trackedPeer.getHexInfoHash());
+							report.setPeerHash(trackedPeer.getStringPeerId());
+							report.setIp(trackedPeer.getIp());
+							logger.info("{}", report);
+						}
+					}
+				}
+				try {
+					sleep(300);
+				} catch (Exception e) {
+					logger.error(getName(), e);
+				}
+			} while (true);
+		} catch (Exception e) {
+			logger.error(getName(), e);
+		}
+	}
+
 	private void startTracker() throws IOException {
 		tracker.start(true);
+		start();
 	}
 
 	private void initTracker() throws IOException {
