@@ -26,45 +26,42 @@ public class PASBittorrentSpyInit extends Thread {
 	Tracker tracker;
 
 	public static void main(String[] args) throws IOException {
-		PASBittorrentSpyHeader.pasBittorrentSpyInit.readConfig();
-		PASBittorrentSpyHeader.pasBittorrentSpyInit.initTracker();
-		PASBittorrentSpyHeader.pasBittorrentSpyInit.readTorrents();
-		PASBittorrentSpyHeader.pasBittorrentSpyInit.startTracker();
+		PASBittorrentSpyHeader.getPasBittorrentSpyInit().readConfig();
+		PASBittorrentSpyHeader.getPasBittorrentSpyInit().initTracker();
+		PASBittorrentSpyHeader.getPasBittorrentSpyInit().readTorrents();
+		PASBittorrentSpyHeader.getPasBittorrentSpyInit().startTracker();
 	}
 
 	@Override
 	public void run() {
-		try {
-			do {
-				if (tracker != null) {
-					Collection<TrackedTorrent> trackedTorrents = tracker.getTrackedTorrents();
-					for (TrackedTorrent trackedTorrent : trackedTorrents) {
-						Map<PeerUID, TrackedPeer> trackedPeers = trackedTorrent.getPeers();
-						for (Map.Entry<PeerUID, TrackedPeer> trackedPeerEntry : trackedPeers.entrySet()) {
-							PeerUID id = trackedPeerEntry.getKey();
-							String torrentHash = id.getTorrentHash();
+		do {
+			if (tracker != null) {
+				Collection<TrackedTorrent> trackedTorrents = tracker.getTrackedTorrents();
+				for (TrackedTorrent trackedTorrent : trackedTorrents) {
+					Map<PeerUID, TrackedPeer> trackedPeers = trackedTorrent.getPeers();
+					for (Map.Entry<PeerUID, TrackedPeer> trackedPeerEntry : trackedPeers.entrySet()) {
+						PeerUID id = trackedPeerEntry.getKey();
+						String torrentHash = id.getTorrentHash();
 
-							TrackedPeer trackedPeer = trackedPeerEntry.getValue();
-							ReportForTorrentPeer report = new ReportForTorrentPeer();
+						TrackedPeer trackedPeer = trackedPeerEntry.getValue();
+						ReportForTorrentPeer report = new ReportForTorrentPeer();
 
-							report.setTime(System.currentTimeMillis() / 1000);
-							report.setTorrentHash(torrentHash);
-							report.setPeerHash(trackedPeer.getHexPeerId());
-							report.setIp(trackedPeer.getIp());
-							report.setPort(trackedPeer.getPort());
-							logger.info("{}", report);
-						}
+						report.setTime(System.currentTimeMillis() / 1000);
+						report.setTorrentHash(torrentHash);
+						report.setPeerHash(trackedPeer.getHexPeerId());
+						report.setIp(trackedPeer.getIp());
+						report.setPort(trackedPeer.getPort());
+						logger.info("{}", report);
 					}
 				}
-				try {
-					sleep(300);
-				} catch (Exception e) {
-					logger.error(getName(), e);
-				}
-			} while (true);
-		} catch (Exception e) {
-			logger.error(getName(), e);
-		}
+			}
+			try {
+				sleep(300);
+			} catch (Exception e) {
+				logger.error(getName(), e);
+			}
+		} while (true);
+
 	}
 
 	private void startTracker() throws IOException {

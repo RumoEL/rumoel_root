@@ -1,4 +1,4 @@
-package com.github.rumoel.hub.init;
+package com.github.rumoel.hub;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

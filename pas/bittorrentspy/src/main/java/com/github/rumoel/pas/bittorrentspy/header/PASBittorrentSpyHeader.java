@@ -12,7 +12,9 @@ public class PASBittorrentSpyHeader {
 	private PASBittorrentSpyHeader() {
 	}
 
-	public static PASBittorrentSpyInit pasBittorrentSpyInit = new PASBittorrentSpyInit();
+	@Getter
+	@Setter
+	private static PASBittorrentSpyInit pasBittorrentSpyInit = new PASBittorrentSpyInit();
 
 	@Getter
 	public static final File ROOTDIR = new File("PBS");
@@ -22,5 +24,5 @@ public class PASBittorrentSpyHeader {
 
 	@Getter
 	@Setter
-	public static PASBittorrentSpyConfig config = new PASBittorrentSpyConfig();
+	private static PASBittorrentSpyConfig config = new PASBittorrentSpyConfig();
 }

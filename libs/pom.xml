@@ -13,5 +13,6 @@
 	<modules>
 		<module>torrentlibs/mpetazzoni/ttorrent</module>
 		<module>paslibs</module>
+		<module>rumoelcorelibs</module>
 	</modules>
 </project>
