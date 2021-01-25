@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	lang="en">
 <head>
 <title>RUMOEL</title>
 <meta charset="UTF-8">
 </head>
 <body>
+	<h1>Welcome!</h1>
 
+	<ul>
+		<li sec:authorize="isAnonymous()"><a class="nav-link"
+			href="/login">Login</a></li>
+		<li sec:authorize="isAuthenticated()"><a class="nav-link"
+			href="/logout">Logout</a></li>
+		<li sec:authorize="isAuthenticated()">Wellcome, <span
+			sec:authentication="name"></span></li>
+	</ul>
 
-	<!-- 	<form action="save" method="post">
-		<table>
-			<tr>
-				
-				<td><label for="user-name">User Name</label></td>
-				<td><input type="text" name="name"></input></td>
-			</tr>
-			<tr>
-				<td><label for="email">Email</label></td>
-				<td><input type="text" name="email"></input></td>
-			</tr>
-			<tr><td></td><td><input type="submit" value="Submit"></input></td></tr></table>
-</form>
-	 -->
+	<div sec:authorize="isAuthenticated()">This content is only shown
+		to authenticated users.</div>
 </body>
 </html>

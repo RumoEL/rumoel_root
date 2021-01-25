@@ -1,4 +1,4 @@
-package com.github.rumoel.hub.service.clients;
+package com.github.rumoel.hub.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.rumoel.hub.dao.ClientRepository;
 import com.github.rumoel.libs.core.model.Client;
 
 @Service
@@ -15,7 +16,7 @@ public class ClientService {
 
 	// getting all books record by using the method findaAll() of CrudRepository
 	public List<Client> getAllClients() {
-		List<Client> books = new ArrayList<Client>();
+		List<Client> books = new ArrayList<>();
 		clientRepository.findAll().forEach(books1 -> books.add(books1));
 		return books;
 	}

@@ -1,4 +1,4 @@
-package com.github.rumoel.hub.service.clients;
+package com.github.rumoel.hub.controller;
 
 import java.util.List;
 
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.rumoel.hub.service.ClientService;
 import com.github.rumoel.libs.core.model.Client;
 
 @RestController

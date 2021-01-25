@@ -1,4 +1,4 @@
-package com.github.rumoel.hub.service.servlets;
+package com.github.rumoel.hub.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,4 +1,4 @@
-package com.github.rumoel.hub.service.clients;
+package com.github.rumoel.hub.dao;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
