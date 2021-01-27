@@ -79,6 +79,7 @@
 		<module>rumoel_hub</module>
 		<module>pas</module>
 		<module>games</module>
+		<module>rumoel-recon</module>
 	</modules>
 
 	<build>
