@@ -10,8 +10,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
 
 		<failOnMissingWebXml>false</failOnMissingWebXml>
 
@@ -24,8 +25,7 @@
 		<!-- SSH -->
 
 		<!-- CRYPTO -->
-		<org.bouncycastle.bcprov-jdk15on.version>1.68
-		</org.bouncycastle.bcprov-jdk15on.version>
+		<org.bouncycastle.bcprov-jdk15on.version>1.68</org.bouncycastle.bcprov-jdk15on.version>
 		<!-- CRYPTO -->
 
 		<!-- DATA -->
@@ -57,12 +57,28 @@
 		<!-- LOGS -->
 		<slf4j.version>2.0.0-alpha1</slf4j.version>
 		<!-- LOGS -->
+
+
+
+		<jackson-dataformat-yaml.version>2.11.1</jackson-dataformat-yaml.version>
+		<jackson-databind.version>2.11.1</jackson-databind.version>
+
+		<lwjgl.version>3.2.3</lwjgl.version>
+		<joml.version>1.9.25</joml.version>
+
+
+		<!-- LOGS -->
+		<org.slf4j.version>2.0.0-alpha1</org.slf4j.version>
+		<!-- LOGS -->
+
+
 	</properties>
 
 	<modules>
 		<module>libs</module>
 		<module>rumoel_hub</module>
 		<module>pas</module>
+		<module>games</module>
 	</modules>
 
 	<build>

@@ -14,5 +14,6 @@
 		<module>torrentlibs/mpetazzoni/ttorrent</module>
 		<module>paslibs</module>
 		<module>rumoelcorelibs</module>
+		<module>games-libs</module>
 	</modules>
 </project>

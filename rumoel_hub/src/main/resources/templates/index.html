@@ -2,24 +2,55 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="https://www.thymeleaf.org"
 	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
-	lang="en">
+	lang="en" style="height: 400px;">
 <head>
 <title>RUMOEL</title>
 <meta charset="UTF-8">
+
+<style type="text/css">
+#withBorder{
+	border: 1px solid black;
+}
+td{
+}
+table {
+	height: 100%;
+	width: 100%;
+	border: 1px solid black;
+}
+</style>
 </head>
-<body>
-	<h1>Welcome!</h1>
+<body style="width: 99%; height: 100%;">
 
-	<ul>
-		<li sec:authorize="isAnonymous()"><a class="nav-link"
-			href="/login">Login</a></li>
-		<li sec:authorize="isAuthenticated()"><a class="nav-link"
-			href="/logout">Logout</a></li>
-		<li sec:authorize="isAuthenticated()">Wellcome, <span
-			sec:authentication="name"></span></li>
-	</ul>
+	<table>
+		<tr style="height: 5%;">
+			<td width="5%"></td>
+			<td></td>
+			<td id="withBorder" width="10%">
+				<div sec:authorize="isAuthenticated()">
+					Wellcome, <span sec:authentication="name"></span> <a
+						class="nav-link" href="/profile">My profile</a>
+				</div>
+				<div sec:authorize="isAnonymous()">
+					<a class="nav-link" href="/login">Login</a>
+				</div>
+				<div sec:authorize="isAnonymous()">
+					<a class="nav-link" href="/register">Register</a>
+				</div>
 
-	<div sec:authorize="isAuthenticated()">This content is only shown
-		to authenticated users.</div>
+				<div sec:authorize="isAuthenticated()">
+					<a class="nav-link" href="/logout">Logout</a>
+				</div>
+			</td>
+
+		</tr>
+		<tr>
+			<td></td>
+			<td id="withBorder">
+				<div sec:authorize="isAuthenticated()">only authenticated
+					users.</div>
+			</td>
+		</tr>
+	</table>
 </body>
 </html>
