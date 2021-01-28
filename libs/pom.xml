@@ -15,5 +15,6 @@
 		<module>paslibs</module>
 		<module>rumoelcorelibs</module>
 		<module>games-libs</module>
+		<module>rumo-libs-recon</module>
 	</modules>
 </project>

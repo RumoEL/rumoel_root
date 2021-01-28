@@ -79,35 +79,32 @@ public class ServerEngine extends Thread {
 				e.printStackTrace();
 			}
 		}
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				logger.info("{} is started", Thread.currentThread().getName());
-				while (active) {
-					try {
-						if (localShips.size() >= ServerHeader.getServerConfig().getEngineConfig().getShipCount()) {
-							Thread.sleep(ServerHeader.getServerConfig().getEngineConfig().getShipRespawnDelay());
-							continue;
-						}
-						Ship ship = new Ship();
-						ship.setLastShotTime(0);
-						ship.getPosition().x = NumberUtils.randomDoubleInRange(
-								ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeXmin(),
-								ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeXmax());
-						ship.getPosition().y = NumberUtils.randomDoubleInRange(
-								ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeYmin(),
-								ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeYmax());
-						ship.getPosition().z = NumberUtils.randomDoubleInRange(
-								ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeZmin(),
-								ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeZmax());
-						NetWorkHeader.sendBroadcast(ship);
-						localShips.add(ship);
-					} catch (Exception e) {
-						e.printStackTrace();
+		new Thread((Runnable) () -> {
+			logger.info("{} is started", Thread.currentThread().getName());
+			while (active) {
+				try {
+					if (localShips.size() >= ServerHeader.getServerConfig().getEngineConfig().getShipCount()) {
+						Thread.sleep(ServerHeader.getServerConfig().getEngineConfig().getShipRespawnDelay());
+						continue;
 					}
+					Ship ship = new Ship();
+					ship.setLastShotTime(0);
+					ship.getPosition().x = NumberUtils.randomDoubleInRange(
+							ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeXmin(),
+							ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeXmax());
+					ship.getPosition().y = NumberUtils.randomDoubleInRange(
+							ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeYmin(),
+							ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeYmax());
+					ship.getPosition().z = NumberUtils.randomDoubleInRange(
+							ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeZmin(),
+							ServerHeader.getServerConfig().getEngineConfig().getShipRespawnRangeZmax());
+					NetWorkHeader.sendBroadcast(ship);
+					localShips.add(ship);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-
 			}
+
 		}, "localShips respawn").start();
 
 		logger.info("init-end");

@@ -4,6 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Config {
+
+	@Getter
+	@Setter
+	private String apiAddr = "http://127.0.0.1:2080/recon/";
+
 	// PROXY
 	@Getter
 	@Setter

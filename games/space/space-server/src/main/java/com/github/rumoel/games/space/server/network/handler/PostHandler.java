@@ -31,16 +31,12 @@ public class PostHandler extends IoHandlerAdapter {
 				}
 			}
 		} else if (message instanceof ReadyPacket) {
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					for (Ship ship : ServerEngine.localShips) {
-						session.write(ship);
-					}
-					for (Asteroid asteroid : ServerEngine.localAsteroids) {
-						session.write(asteroid);
-					}
+			new Thread(() -> {
+				for (Ship ship : ServerEngine.localShips) {
+					session.write(ship);
+				}
+				for (Asteroid asteroid : ServerEngine.localAsteroids) {
+					session.write(asteroid);
 				}
 			}).start();
 		}

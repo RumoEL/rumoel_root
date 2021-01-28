@@ -5,8 +5,6 @@ import java.net.InetSocketAddress;
 
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
-import org.apache.mina.core.future.IoFuture;
-import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -62,17 +60,14 @@ public final class NetworkHandler {
 			ConnectFuture connFuture = NetworkHeader.getNioDatagramConnector()
 					.connect(new InetSocketAddress(GameHeader.getClientConfig().getNetworkConfig().getServerHost(),
 							GameHeader.getClientConfig().getNetworkConfig().getServerPort()));
-			connFuture.addListener(new IoFutureListener<IoFuture>() {
-				@Override
-				public void operationComplete(IoFuture future) {
-					ConnectFuture connFuture = (ConnectFuture) future;
-					if (connFuture.isConnected()) {
-						session = future.getSession();
-						logger.info("startNetwork-UDP-connected");
-						session.write(new ReadyPacket());
-					} else {
-						logger.error("startNetwork-UDP-Not connected...exiting");
-					}
+			connFuture.addListener(future -> {
+				ConnectFuture connFuture1 = (ConnectFuture) future;
+				if (connFuture1.isConnected()) {
+					session = future.getSession();
+					logger.info("startNetwork-UDP-connected");
+					session.write(new ReadyPacket());
+				} else {
+					logger.error("startNetwork-UDP-Not connected...exiting");
 				}
 			});
 		} else if (protoType == ProtoType.TCP) {
@@ -92,23 +87,19 @@ public final class NetworkHandler {
 				}
 			}
 		}
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				while (!ClientGameEngine.rune) {
-					try {
-						if (session != null) {
-							session.write(new PingPacket());
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
+		new Thread(() -> {
+			while (!ClientGameEngine.rune) {
+				try {
+					if (session != null) {
+						session.write(new PingPacket());
 					}
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e2) {
+					e2.printStackTrace();
 				}
 			}
 		}).start();

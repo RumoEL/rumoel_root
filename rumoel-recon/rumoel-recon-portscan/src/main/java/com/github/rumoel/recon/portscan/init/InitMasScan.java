@@ -11,101 +11,42 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.net.util.SubnetUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.rumoel.recon.portscan.configs.Config;
-import com.github.rumoel.recon.portscan.configs.HEADER_ALL;
 import com.github.rumoel.recon.portscan.engine.ScanThread;
+import com.github.rumoel.recon.portscan.header.PortScanHeader;
 import com.github.rumoel.recon.portscan.proxy.InitProxy;
 
-import sockslib.client.SocksSocket;
-
+@EntityScan(basePackages = "com.github.rumoel.libs.core.model")
+@SpringBootApplication
 public class InitMasScan {
 
-	protected static final Logger logger = LoggerFactory.getLogger(SocksSocket.class);
+	protected static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InitMasScan.class);
 
 	static ArrayList<ScanThread> scanThreads = new ArrayList<>();
 	public static boolean stop = false;
 	static File configFile = new File("Config.yml");
 
-	public static void prepare() throws JsonGenerationException, JsonMappingException, IOException {
-		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+	public static void main(String[] args) throws IOException {
+		java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.OFF);
 
-		if (!configFile.exists()) {
-			HEADER_ALL.config = new Config();
-			mapper.writeValue(configFile, HEADER_ALL.config);
-			System.err.println("Отредактируйте " + configFile.getAbsolutePath());
-			System.exit(0);
-		} else {
-			try {
-				HEADER_ALL.config = mapper.readValue(configFile, Config.class);
-			} catch (Exception e) {
-				System.err.println("Ошибка в " + configFile.getAbsolutePath());
-				e.printStackTrace();
-
-				System.exit(1);
-			}
-
-			System.out.println(ReflectionToStringBuilder.toString(HEADER_ALL.config, ToStringStyle.MULTI_LINE_STYLE));
-		}
-		System.out.println("Конфиг настроен");
+		InitMasScan initMasScan = new InitMasScan();
+		initMasScan.initConfig();
+		initMasScan.startApp();
 	}
 
-	public static void startCleaner() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				do {
-					for (int j = 0; j < scanThreads.size(); j++) {
-						ScanThread thread = scanThreads.get(j);
-						if (thread != null) {
-							State state = thread.getState();
-							if (state.equals(Thread.State.TERMINATED)) {
-								scanThreads.remove(thread);
-								// System.out.println(scanThreads.size());
-								thread = null;
-								state = null;
-							}
-						}
-					}
-					if (stop) {
-						break;
-					}
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				} while (stop == false);
-			}
-		}).start();
-		System.out.println("Очистка потоков запущена");
-	}
-
-	public static void main(String[] args) throws JsonGenerationException, JsonMappingException, IOException {
-		prepare();
-
-		// Выбираем режим и запускаем
-		if (HEADER_ALL.config != null) {
-			if (HEADER_ALL.config.isPrepared() == true) {
-				System.out.println("Настройка-прокси");
+	private void startApp() {
+		if (PortScanHeader.config != null) {
+			if (PortScanHeader.config.isPrepared()) {
 				InitProxy.prepareProxy();
-				System.out.println("Настройка-прокси-настроен");
-
 				startCleaner();
-
 				cidrModeScan();
-
-				// RANDOM
 				randomModeScan();
-				// RANDOM
-
-				while (!(scanThreads.size() == 0)) {
+				while (!scanThreads.isEmpty()) {
 					try {
 						Thread.sleep(300);
 					} catch (InterruptedException e) {
@@ -113,18 +54,70 @@ public class InitMasScan {
 					}
 				}
 				stop = true;
-
 			} else {
 				System.err.println("Отредактируйте " + configFile.getAbsolutePath() + " и установите prepared в true");
 			}
 		}
+
+	}
+
+	public static void startCleaner() {
+		new Thread(() -> {
+			do {
+				for (int j = 0; j < scanThreads.size(); j++) {
+					ScanThread thread = scanThreads.get(j);
+					if (thread != null) {
+						State state = thread.getState();
+						if (state.equals(Thread.State.TERMINATED)) {
+							scanThreads.remove(thread);
+							// System.out.println(scanThreads.size());
+							thread = null;
+							state = null;
+						}
+					}
+				}
+				if (stop) {
+					break;
+				}
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} while (stop == false);
+		}).start();
+		System.out.println("Очистка потоков запущена");
+	}
+
+	private void initConfig() throws IOException {
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+		if (!configFile.exists()) {
+			PortScanHeader.config = new Config();
+			mapper.writeValue(configFile, PortScanHeader.config);
+			System.err.println("Отредактируйте " + configFile.getAbsolutePath());
+			System.exit(0);
+		} else {
+			try {
+				PortScanHeader.config = mapper.readValue(configFile, Config.class);
+			} catch (Exception e) {
+				System.err.println("Ошибка в " + configFile.getAbsolutePath());
+				e.printStackTrace();
+
+				System.exit(1);
+			}
+
+			System.out
+					.println(ReflectionToStringBuilder.toString(PortScanHeader.config, ToStringStyle.MULTI_LINE_STYLE));
+		}
+		System.out.println("Конфиг настроен");
+
 	}
 
 	public static void randomModeScan() {
-		if (HEADER_ALL.config.isRandomMode()) {
+		if (PortScanHeader.config.isRandomMode()) {
 			System.out.println("Запущен в RandomMode");
 			do {
-				int[] ports = HEADER_ALL.config.getPorts();
+				int[] ports = PortScanHeader.config.getPorts();
 				for (int j2 = 0; j2 < ports.length; j2++) {
 					int port = ports[j2];
 					sleepThreads();
@@ -145,9 +138,9 @@ public class InitMasScan {
 	}
 
 	public static void cidrModeScan() {
-		if (HEADER_ALL.config.isCIDRMode()) {
-			if (HEADER_ALL.config.getCidr() != null) {
-				for (String cidr : HEADER_ALL.config.getCidr()) {
+		if (PortScanHeader.config.isCIDRMode()) {
+			if (PortScanHeader.config.getCidr() != null) {
+				for (String cidr : PortScanHeader.config.getCidr()) {
 					SubnetUtils utils = new SubnetUtils(cidr);
 					String[] hosts = utils.getInfo().getAllAddresses();
 					for (String host : hosts) {
@@ -155,8 +148,8 @@ public class InitMasScan {
 					}
 				}
 			}
-			if (HEADER_ALL.config.getSinglIP() != null) {
-				for (String host : HEADER_ALL.config.getSinglIP()) {
+			if (PortScanHeader.config.getSinglIP() != null) {
+				for (String host : PortScanHeader.config.getSinglIP()) {
 					scanPortInCidrMode(host);
 				}
 			}
@@ -165,8 +158,8 @@ public class InitMasScan {
 	}
 
 	public static void scanPortInCidrMode(String host) {
-		if (HEADER_ALL.config.getPorts() != null) {
-			for (int port : HEADER_ALL.config.getPorts()) {
+		if (PortScanHeader.config.getPorts() != null) {
+			for (int port : PortScanHeader.config.getPorts()) {
 				sleepThreads();
 				ScanThread th = new ScanThread(host, port);
 
@@ -174,8 +167,8 @@ public class InitMasScan {
 				th.start();
 			}
 		}
-		if (HEADER_ALL.config.getPortsRange() != null) {
-			for (String port : HEADER_ALL.config.getPortsRange()) {
+		if (PortScanHeader.config.getPortsRange() != null) {
+			for (String port : PortScanHeader.config.getPortsRange()) {
 				String cleared = port.replaceAll(" ", "");
 				int first = Integer.parseInt(StringUtils.substringBefore(cleared, "-"));
 				int last = Integer.parseInt(StringUtils.substringAfter(cleared, "-"));
@@ -192,7 +185,7 @@ public class InitMasScan {
 	}
 
 	private static void sleepThreads() {
-		while (scanThreads.size() > HEADER_ALL.config.getThreads()) {
+		while (scanThreads.size() > PortScanHeader.config.getThreads()) {
 			try {
 				Thread.sleep(300);
 			} catch (InterruptedException e) {

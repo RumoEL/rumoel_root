@@ -54,10 +54,7 @@
 		<!-- API VK -->
 		<hibernate.version>5.4.25.Final</hibernate.version>
 
-		<!-- LOGS -->
-		<slf4j.version>2.0.0-alpha1</slf4j.version>
-		<!-- LOGS -->
-
+		
 
 
 		<jackson-dataformat-yaml.version>2.11.1</jackson-dataformat-yaml.version>
@@ -66,10 +63,12 @@
 		<lwjgl.version>3.2.3</lwjgl.version>
 		<joml.version>1.9.25</joml.version>
 
-
 		<!-- LOGS -->
+		<slf4j.version>2.0.0-alpha1</slf4j.version>
+		<!-- LOGS 
 		<org.slf4j.version>2.0.0-alpha1</org.slf4j.version>
-		<!-- LOGS -->
+		
+		-->
 
 
 	</properties>

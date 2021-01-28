@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import com.github.rumoel.recon.portscan.configs.HEADER_ALL;
+import com.github.rumoel.libs.recon.info.HostPort;
+import com.github.rumoel.recon.portscan.header.PortScanHeader;
+import com.github.rumoel.recon.portscan.spring.PortscanSpringClientService;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.tongfei.progressbar.ProgressBar;
 import sockslib.client.SocksSocket;
 
 public class ScanThread extends Thread implements Runnable {
@@ -20,19 +21,9 @@ public class ScanThread extends Thread implements Runnable {
 	@Setter
 	private int PORT;
 
-	private ProgressBar progressBar;
-
-	public ScanThread(String host, int port, ProgressBar pb) {
+	public ScanThread(String host, int port) {
 		this.setHOST(host);
 		this.setPORT(port);
-		if (pb != null) {
-			progressBar = pb;
-		}
-	}
-
-	public ScanThread(String string, Integer integer) {
-		this.setHOST(string);
-		this.setPORT(integer);
 	}
 
 	@Override
@@ -49,33 +40,42 @@ public class ScanThread extends Thread implements Runnable {
 			} catch (IOException ex) {
 				System.out.println(ex.getMessage());
 			}
+			HostPort result = new HostPort(System.currentTimeMillis() / 1000, getHOST(), getPORT());
+			PortscanSpringClientService.sendResult(result);
 		}
-		if (progressBar != null) {
-			progressBar.step();
-		}
+
 	}
 
 	private boolean checkPort(String host, int port) {
-		Socket aaSocket = null;
 		try {
-			if (HEADER_ALL.config.isProxy_use()) {
-				aaSocket = new SocksSocket(HEADER_ALL.proxy);
+			if (PortScanHeader.config.isProxy_use()) {
+
+				/*
+				 * SocketAddress addr = new
+				 * InetSocketAddress(PortScanHeader.config.getProxy_host(),
+				 * PortScanHeader.config.getProxy_port());
+				 * 
+				 * Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr); // Socket socket = new
+				 * Socket(proxy); InetSocketAddress dest = new
+				 * InetSocketAddress("server.example.org", 1234); socket.connect(dest); //
+				 * 
+				 */
+
+				try (Socket tmpSocket = new SocksSocket(PortScanHeader.proxy)) {
+					connect(tmpSocket, host, port);
+				}
 			} else {
-				aaSocket = new Socket();
+				try (Socket tmpSocket = new Socket()) {
+					connect(tmpSocket, host, port);
+				}
 			}
-			aaSocket.connect(new InetSocketAddress(this.getHOST(), this.getPORT()), HEADER_ALL.config.getTimeout());
-		} catch (IOException e) {
-			try {
-				aaSocket.close();
-			} catch (IOException e1) {
-			}
+		} catch (Exception e) {
 			return false;
-		}
-		try {
-			aaSocket.close();
-		} catch (IOException e) {
 		}
 		return true;
 	}
 
+	private void connect(Socket socket, String host, int port) throws IOException {
+		socket.connect(new InetSocketAddress(host, port), PortScanHeader.config.getTimeout());
+	}
 }

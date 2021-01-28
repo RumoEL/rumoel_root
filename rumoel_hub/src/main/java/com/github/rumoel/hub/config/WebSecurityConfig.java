@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,13 +20,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/", "/about", "/register").permitAll();
+		http.
+		//
+				csrf().ignoringAntMatchers("/api/insecure/**").and().
 
-		http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN");
-		http.authorizeRequests().anyRequest().fullyAuthenticated().and()
-
+				//
+				authorizeRequests().antMatchers(HttpMethod.POST, "/api/**", "/api/recon").permitAll().and().
+				//
+				authorizeRequests().antMatchers("/", "/about", "/register").permitAll().and()
+				//
+				//
+				.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN").and()
+				//
+				.authorizeRequests().anyRequest().fullyAuthenticated().and()
+				//
 				.formLogin().loginPage("/login").permitAll().and()
-
+				//
 				.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/");
 	}
 
