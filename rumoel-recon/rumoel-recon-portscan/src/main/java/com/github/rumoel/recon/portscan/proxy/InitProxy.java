@@ -14,5 +14,4 @@ public class InitProxy {
 		PortScanHeader.proxy.setCredentials(new UsernamePasswordCredentials(PortScanHeader.config.getProxy_user(),
 				PortScanHeader.config.getProxy_password()));
 	}
-
 }

@@ -23,7 +23,9 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
 		</dependencies>
+
 	</dependencyManagement>
 
 
@@ -64,6 +66,12 @@
 			<groupId>com.github.mike10004</groupId>
 			<artifactId>fengyouchao-sockslib</artifactId>
 			<version>1.0.6</version> <!-- use latest version from Maven badge above -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>

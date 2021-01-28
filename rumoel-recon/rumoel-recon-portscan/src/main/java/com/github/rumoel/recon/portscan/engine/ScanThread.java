@@ -43,24 +43,11 @@ public class ScanThread extends Thread implements Runnable {
 			HostPort result = new HostPort(System.currentTimeMillis() / 1000, getHOST(), getPORT());
 			PortscanSpringClientService.sendResult(result);
 		}
-
 	}
 
 	private boolean checkPort(String host, int port) {
 		try {
 			if (PortScanHeader.config.isProxy_use()) {
-
-				/*
-				 * SocketAddress addr = new
-				 * InetSocketAddress(PortScanHeader.config.getProxy_host(),
-				 * PortScanHeader.config.getProxy_port());
-				 * 
-				 * Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr); // Socket socket = new
-				 * Socket(proxy); InetSocketAddress dest = new
-				 * InetSocketAddress("server.example.org", 1234); socket.connect(dest); //
-				 * 
-				 */
-
 				try (Socket tmpSocket = new SocksSocket(PortScanHeader.proxy)) {
 					connect(tmpSocket, host, port);
 				}

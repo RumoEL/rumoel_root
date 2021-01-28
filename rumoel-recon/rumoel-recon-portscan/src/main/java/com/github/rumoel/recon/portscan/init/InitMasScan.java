@@ -11,8 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.net.util.SubnetUtils;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -21,8 +19,6 @@ import com.github.rumoel.recon.portscan.engine.ScanThread;
 import com.github.rumoel.recon.portscan.header.PortScanHeader;
 import com.github.rumoel.recon.portscan.proxy.InitProxy;
 
-@EntityScan(basePackages = "com.github.rumoel.libs.core.model")
-@SpringBootApplication
 public class InitMasScan {
 
 	protected static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InitMasScan.class);
@@ -32,7 +28,6 @@ public class InitMasScan {
 	static File configFile = new File("Config.yml");
 
 	public static void main(String[] args) throws IOException {
-		java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.OFF);
 
 		InitMasScan initMasScan = new InitMasScan();
 		initMasScan.initConfig();
@@ -222,15 +217,12 @@ public class InitMasScan {
 	}
 
 	public static boolean ipInPrivateRange(String host) {
-		if (isValidRange("127.0.0.0", "127.255.255.255", host)) {
-			return true;
-		} else if (isValidRange("192.168.0.0", "192.168.255.255", host)) {
-			return true;
-		} else if (isValidRange("10.0.0.0", "10.255.255.255", host)) {
-			return true;
-		} else if (isValidRange("172.16.0.0", "172.31.255.255", host)) {
+		if (isValidRange("127.0.0.0", "127.255.255.255", host) || isValidRange("192.168.0.0", "192.168.255.255", host)
+				|| isValidRange("10.0.0.0", "10.255.255.255", host)
+				|| isValidRange("172.16.0.0", "172.31.255.255", host)) {
 			return true;
 		}
+
 		return false;
 	}
 }
