@@ -6,6 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class SpaceEntityEvent extends SpaceEvent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4184058426407735L;
 	@Getter
 	@Setter
 	SpaceEntity targetEntity;

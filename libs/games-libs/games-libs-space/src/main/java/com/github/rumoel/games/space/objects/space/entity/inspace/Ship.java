@@ -8,6 +8,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Ship extends SpaceEntity {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8802711377991560305L;
+
 	public Ship() throws NoSuchAlgorithmException {
 		super();
 	}

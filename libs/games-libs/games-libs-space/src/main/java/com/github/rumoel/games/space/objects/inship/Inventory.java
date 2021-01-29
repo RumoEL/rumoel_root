@@ -9,6 +9,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Inventory implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9004690403290666062L;
 	@Getter
 	@Setter
 	private int maxSize;

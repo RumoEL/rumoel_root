@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,9 @@ import com.github.rumoel.libs.core.model.User;
 public class RegisterController {
 	@Autowired
 	private UserRepo userRepo;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@RequestMapping("/register")
 	public String page() {
@@ -33,6 +37,8 @@ public class RegisterController {
 
 		user.setActive(true);
 		user.setRoles(Collections.singleton(Role.USER));
+
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		userRepo.save(user);
 
 		return "redirect:/login";

@@ -13,6 +13,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Player implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4157823777019497372L;
 	@Getter
 	@Setter
 	String uid;

@@ -14,6 +14,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class SpaceEntity implements Serializable, SpaceEntityInterface {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3343374412307380905L;
+
 	@Getter
 	@Setter
 	int id;
