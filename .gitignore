@@ -32,5 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
-PBS
 RUMOEL_HUB
+
+PBS
+rumoel_pas_bittorrentspy
