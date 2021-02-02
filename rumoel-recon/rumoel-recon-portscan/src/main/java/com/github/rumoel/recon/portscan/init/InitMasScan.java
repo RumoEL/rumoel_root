@@ -120,12 +120,14 @@ public class InitMasScan {
 				}
 				// singlePort
 				// range
-				for (String portRange : PortScanHeader.config.getPortsRange()) {
-					portRange = portRange.replaceAll(" ", "");
-					int min = Integer.parseInt(portRange.split("-")[0]);
-					int max = Integer.parseInt(portRange.split("-")[1]);
-					for (int port = min; port <= max; port++) {
-						runScan(host, port);
+				if (PortScanHeader.config.getPortsRange() != null) {
+					for (String portRange : PortScanHeader.config.getPortsRange()) {
+						portRange = portRange.replaceAll(" ", "");
+						int min = Integer.parseInt(portRange.split("-")[0]);
+						int max = Integer.parseInt(portRange.split("-")[1]);
+						for (int port = min; port <= max; port++) {
+							runScan(host, port);
+						}
 					}
 				}
 				// range
