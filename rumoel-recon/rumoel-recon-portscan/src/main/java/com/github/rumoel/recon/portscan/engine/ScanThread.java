@@ -24,6 +24,7 @@ public class ScanThread extends Thread implements Runnable {
 	public ScanThread(String host, int port) {
 		this.setHOST(host);
 		this.setPORT(port);
+		PortScanHeader.scanThreads.add(this);
 	}
 
 	@Override

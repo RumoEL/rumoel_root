@@ -21,4 +21,21 @@ public class Ship extends SpaceEntity {
 	@Setter
 	public long lastShotTime;
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Ship [getId()=");
+		builder.append(getId());
+		builder.append(", getHealth()=");
+		builder.append(getHealth());
+		builder.append(", getPosition()=");
+		builder.append(getPosition());
+		builder.append(", getLinearVel()=");
+		builder.append(getLinearVel());
+		builder.append(", getProjectileVelocity()=");
+		builder.append(getProjectileVelocity());
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

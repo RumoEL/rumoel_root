@@ -33,6 +33,7 @@ public class SpaceEntity implements Serializable, SpaceEntityInterface {
 
 	@Getter
 	Vector3d position = new Vector3d(0, 0, 10);
+
 	@Getter
 	@Setter
 	Vector3f linearVel = new Vector3f();

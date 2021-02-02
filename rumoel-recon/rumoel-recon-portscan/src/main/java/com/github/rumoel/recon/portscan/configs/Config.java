@@ -31,6 +31,9 @@ public class Config {
 
 	@Getter
 	@Setter
+	private boolean customMode = true;
+	@Getter
+	@Setter
 	private boolean randomMode = true;
 	@Getter
 	@Setter
