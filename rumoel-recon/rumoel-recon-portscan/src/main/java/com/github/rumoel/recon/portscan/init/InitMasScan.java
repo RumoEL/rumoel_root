@@ -114,9 +114,10 @@ public class InitMasScan {
 				}
 
 				// singlePort
-				int[] ports = PortScanHeader.config.getPorts();
-				for (int port : ports) {
-					runScan(host, port);
+				if (PortScanHeader.config.getPorts() != null) {
+					for (int port : PortScanHeader.config.getPorts()) {
+						runScan(host, port);
+					}
 				}
 				// singlePort
 				// range
