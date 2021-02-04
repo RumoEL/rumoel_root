@@ -47,8 +47,17 @@ table {
 		<tr>
 			<td></td>
 			<td id="withBorder">
-				<div sec:authorize="isAuthenticated()">only authenticated
-					users.</div>
+				<div sec:authorize="isAuthenticated()">
+
+
+
+
+					<ul>
+						<li><a target="_blank" href="/honeypots">honeypots (-)</a></li>
+						<li><a target="_blank" href="/vkBots">vkbots (-)</a></li>
+						<li><a target="_blank" href="/pas">pas (-)</a></li>
+					</ul>
+				</div>
 			</td>
 		</tr>
 	</table>

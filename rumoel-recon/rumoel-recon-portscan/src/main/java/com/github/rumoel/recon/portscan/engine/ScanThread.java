@@ -8,6 +8,7 @@ import java.net.Socket;
 import com.github.rumoel.libs.recon.info.HostPort;
 import com.github.rumoel.recon.portscan.header.PortScanHeader;
 import com.github.rumoel.recon.portscan.spring.PortscanSpringClientService;
+import com.github.rumoel.recon.portscan.utils.IpUtils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -41,8 +42,11 @@ public class ScanThread extends Thread implements Runnable {
 			} catch (IOException ex) {
 				System.out.println(ex.getMessage());
 			}
-			HostPort result = new HostPort(System.currentTimeMillis() / 1000, getHOST(), getPORT());
-			PortscanSpringClientService.sendResult(result);
+
+			if (!IpUtils.ipInPrivateRange(getHOST())) {
+				HostPort result = new HostPort(System.currentTimeMillis() / 1000, getHOST(), getPORT());
+				PortscanSpringClientService.sendResult(result);
+			}
 		}
 	}
 

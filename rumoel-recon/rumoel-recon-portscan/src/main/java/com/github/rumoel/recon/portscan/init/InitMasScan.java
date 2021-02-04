@@ -26,14 +26,13 @@ public class InitMasScan {
 		if (!PortScanHeader.configFile.exists()) {
 			PortScanHeader.config = new Config();
 			mapper.writeValue(PortScanHeader.configFile, PortScanHeader.config);
-			System.err.println("Отредактируйте " + PortScanHeader.configFile.getAbsolutePath());
+			logger.warn("Отредактируйте {}", PortScanHeader.configFile.getAbsolutePath());
 			System.exit(0);
 		} else {
 			try {
 				PortScanHeader.config = mapper.readValue(PortScanHeader.configFile, Config.class);
 			} catch (Exception e) {
-				System.err.println("Ошибка в " + PortScanHeader.configFile.getAbsolutePath());
-				e.printStackTrace();
+				logger.error("Ошибка в {} {}", PortScanHeader.configFile.getAbsolutePath(), e);
 				System.exit(1);
 			}
 			String msg = ReflectionToStringBuilder.toString(PortScanHeader.config, ToStringStyle.MULTI_LINE_STYLE);
@@ -66,14 +65,14 @@ public class InitMasScan {
 				while (!PortScanHeader.scanThreads.isEmpty()) {
 					try {
 						Thread.sleep(300);
-					} catch (InterruptedException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 				PortScanHeader.stop = true;
 			} else {
-				System.err.println("Отредактируйте " + PortScanHeader.configFile.getAbsolutePath()
-						+ " и установите prepared в true");
+				logger.warn("Отредактируйте {} и установите prepared в true",
+						PortScanHeader.configFile.getAbsolutePath());
 			}
 		}
 
@@ -102,7 +101,6 @@ public class InitMasScan {
 
 	private void modeHostRandom() {
 		if (PortScanHeader.config.isRandomMode()) {
-			System.out.println("Запущен в RandomMode");
 			do {
 				int part1 = NumericUtils.rnd(1, 255);
 				int part2 = NumericUtils.rnd(1, 255);
@@ -152,13 +150,14 @@ public class InitMasScan {
 	}
 
 	private void modePortRange(String singleHost) {
-		for (String portRange : PortScanHeader.config.getPortsRange()) {
-			portRange = portRange.replaceAll(" ", "");
-			int min = Integer.parseInt(portRange.split("-")[0]);
-			int max = Integer.parseInt(portRange.split("-")[1]);
-			for (int i = min; i <= max; i++) {
-				int port = i;
-				runScan(singleHost, port);
+		if (PortScanHeader.config.getPortsRange() != null) {
+			for (String portRange : PortScanHeader.config.getPortsRange()) {
+				portRange = portRange.replaceAll(" ", "");
+				int min = Integer.parseInt(portRange.split("-")[0]);
+				int max = Integer.parseInt(portRange.split("-")[1]);
+				for (int port = min; port <= max; port++) {
+					runScan(singleHost, port);
+				}
 			}
 		}
 	}
