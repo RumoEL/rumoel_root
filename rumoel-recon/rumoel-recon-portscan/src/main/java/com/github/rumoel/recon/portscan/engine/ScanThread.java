@@ -44,7 +44,8 @@ public class ScanThread extends Thread implements Runnable {
 			}
 
 			if (!IpUtils.ipInPrivateRange(getHOST())) {
-				HostPort result = new HostPort(System.currentTimeMillis() / 1000, getHOST(), getPORT());
+				HostPort result = new HostPort(System.currentTimeMillis() / 1000, getHOST(), getPORT(),
+						HostPort.protocol.TCP);
 				PortscanSpringClientService.sendResult(result);
 			}
 		}
