@@ -32,7 +32,13 @@ build/
 ### VS Code ###
 .vscode/
 
+
+
+.attach_pid*
+
 RUMOEL_HUB
 
 PBS
 rumoel_pas_bittorrentspy
+rumosploit/rumosploit-server/rumosploit/Sconfig.yml
+rumosploit/rumosploit-bot/src/main/resources/bconfig.yml

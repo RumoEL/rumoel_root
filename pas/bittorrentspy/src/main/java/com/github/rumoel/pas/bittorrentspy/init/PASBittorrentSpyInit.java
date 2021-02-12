@@ -70,8 +70,12 @@ public class PASBittorrentSpyInit extends Thread {
 	}
 
 	private void initTracker() throws IOException {
+		// HTTP
 		tracker = new Tracker(Tracker.DEFAULT_TRACKER_PORT);
 		tracker.setAcceptForeignTorrents(true);
+		// HTTP
+		// DHT
+		// DHT
 	}
 
 	private void readTorrents() throws IOException {

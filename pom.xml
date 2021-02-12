@@ -54,7 +54,7 @@
 		<!-- API VK -->
 		<hibernate.version>5.4.25.Final</hibernate.version>
 
-		
+
 
 
 		<jackson-dataformat-yaml.version>2.11.1</jackson-dataformat-yaml.version>
@@ -65,10 +65,8 @@
 
 		<!-- LOGS -->
 		<slf4j.version>2.0.0-alpha1</slf4j.version>
-		<!-- LOGS 
-		<org.slf4j.version>2.0.0-alpha1</org.slf4j.version>
-		
-		-->
+		<!-- LOGS <org.slf4j.version>2.0.0-alpha1</org.slf4j.version> -->
+		<bt-version>1.9</bt-version>
 
 
 	</properties>
@@ -79,6 +77,7 @@
 		<module>pas</module>
 		<module>games</module>
 		<module>rumoel-recon</module>
+		<module>rumosploit</module>
 	</modules>
 
 	<build>
