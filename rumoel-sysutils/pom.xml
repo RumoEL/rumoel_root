@@ -3,20 +3,20 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.github.rumoel.rumoel.sploit</groupId>
-		<artifactId>rumosploit</artifactId>
+		<groupId>com.github.rumoel.rumoel</groupId>
+		<artifactId>rumoel</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>rumosploit-configurator</artifactId>
+	<artifactId>rumoel-sysutils</artifactId>
+
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.rumoel.rumoel.sploit</groupId>
-			<artifactId>rumosploit-libs</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${apache-common-io.version}</version>
 		</dependency>
 	</dependencies>
-
 
 
 	<build>
@@ -25,14 +25,17 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
+
 					<execution>
-						<id>make-bot</id>
-						<phase>package</phase>
+						<id>make-My</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
 						<configuration>
-							<finalName>${project.artifactId}-${project.version}+git-${git.commit.id.full}</finalName>
+							<finalName>MkdirMVFileToExtDir-git-${git.commit.id.full}
+							</finalName>
 							<archive>
 								<manifest>
-									<mainClass>com.github.rumoel.rumosploit.configurator.init.Init</mainClass>
+									<mainClass>com.github.rumoel.sysutils.files.MkdirMVFileToExtDir
+									</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>
@@ -46,7 +49,6 @@
 				</executions>
 			</plugin>
 			<!--JAR -->
-
 		</plugins>
 	</build>
 </project>
