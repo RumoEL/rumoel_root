@@ -9,6 +9,9 @@ public class Config {
 	@Getter
 	@Setter
 	private boolean prepare;
+	@Getter
+	@Setter
+	private boolean debug;
 
 	@Getter
 	@Setter
