@@ -1,4 +1,4 @@
-package com.github.rumoel.rumosploit.server;
+package com.github.rumoel.rumosploit.server.objects;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;

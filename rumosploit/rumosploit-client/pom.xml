@@ -8,6 +8,15 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>rumosploit-client</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>com.github.rumoel.rumoel.sploit</groupId>
+			<artifactId>rumosploit-libs</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+
 	<build>
 		<plugins>
 			<!--JAR -->
