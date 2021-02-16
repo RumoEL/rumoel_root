@@ -2,10 +2,10 @@ package com.github.rumoel.rumosploit.server.header;
 
 import java.io.File;
 
-import com.github.rumoel.rumosploit.server.Server;
 import com.github.rumoel.rumosploit.server.config.ServerConfig;
 import com.github.rumoel.rumosploit.server.network.bots.TCPHandlerBots;
 import com.github.rumoel.rumosploit.server.network.clients.TCPHandlerClient;
+import com.github.rumoel.rumosploit.server.objects.Server;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +28,10 @@ public final class Header {
 	@Getter
 	private static final File ROOTDIR = new File("rumosploit");
 	@Getter
-	private static File configFile = new File(ROOTDIR, "Sconfig.yml");
+	private static final File ROOTDIR_SERVER = new File(ROOTDIR, "server");
+
+	@Getter
+	private static File configFile = new File(ROOTDIR_SERVER, "Sconfig.yml");
 	@Getter
 	@Setter
 	private static ServerConfig config = new ServerConfig();
