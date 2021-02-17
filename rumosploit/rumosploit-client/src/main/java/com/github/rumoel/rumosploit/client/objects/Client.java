@@ -93,7 +93,9 @@ public class Client extends Thread {
 		ConnectFuture future = Header.getNioSocketConnector().connect(new InetSocketAddress(host, port));
 		future.awaitUninterruptibly();
 		Header.setSession(future.getSession());
-		Header.getSession().write(new ReadyPacket());
+
+		ReadyPacket ready = new ReadyPacket();
+		Header.getSession().write(ready);
 	}
 
 	public void startGui() {

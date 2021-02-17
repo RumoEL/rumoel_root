@@ -1,8 +1,6 @@
 package com.github.rumoel.rumosploit.client.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JDesktopPane;
@@ -14,38 +12,25 @@ import javax.swing.JMenuItem;
 import com.github.rumoel.rumosploit.client.gui.manage.bots.BotManagerFrame;
 import com.github.rumoel.rumosploit.client.gui.status.ServerStatusFrame;
 
+import lombok.Getter;
+
 public class Window extends JFrame {
+
+	private static final long serialVersionUID = 8275620618586051674L;
+	private JDesktopPane jdpDesktop;
+	@Getter
+	private ServerStatusFrame serverStatusFrame;
+	@Getter
+	private BotManagerFrame botManagerFrame;
 
 	public Window() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		int inset = 50;
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		setBounds(inset, inset, screenSize.width - inset * 2, screenSize.height - inset * 2);
+		setSize(1000, 500);
 
 		jdpDesktop = new JDesktopPane();
 		getContentPane().add(jdpDesktop, BorderLayout.CENTER);
-		setJMenuBar(createMenuBar());
-		showStatus();
-		showBots();
-	}
 
-	private void showBots() {
-		botManagerFrame = new BotManagerFrame();
-		botManagerFrame.setLocation(188, 36);
-		botManagerFrame.setVisible(true);
-		jdpDesktop.add(botManagerFrame);
-
-	}
-
-	private void showStatus() {
-		serverStatusFrame = new ServerStatusFrame();
-		serverStatusFrame.setLocation(59, 190);
-		serverStatusFrame.setVisible(true);
-		jdpDesktop.add(serverStatusFrame);
-	}
-
-	protected JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu mnWindows = new JMenu("Windows");
 		mnWindows.setMnemonic(KeyEvent.VK_N);
@@ -58,17 +43,21 @@ public class Window extends JFrame {
 		mntmServerstatus.setMnemonic(KeyEvent.VK_N);
 		mntmServerstatus.addActionListener(e -> serverStatusFrame.setVisible(!serverStatusFrame.isVisible()));
 		mnWindows.add(mntmServerstatus);
-
 		JMenu mnActions = new JMenu("actions");
 		menuBar.add(mnActions);
-
 		JMenuItem mntmExit = new JMenuItem("exit");
 		mnActions.add(mntmExit);
-		return menuBar;
+		setJMenuBar(menuBar);
+
+		serverStatusFrame = new ServerStatusFrame();
+		serverStatusFrame.setLocation(59, 190);
+		serverStatusFrame.setVisible(true);
+		jdpDesktop.add(serverStatusFrame);
+
+		botManagerFrame = new BotManagerFrame();
+		botManagerFrame.setLocation(188, 36);
+		botManagerFrame.setVisible(true);
+		jdpDesktop.add(botManagerFrame);
 	}
 
-	private static final long serialVersionUID = 8275620618586051674L;
-	private JDesktopPane jdpDesktop;
-	private ServerStatusFrame serverStatusFrame;
-	private BotManagerFrame botManagerFrame;
 }

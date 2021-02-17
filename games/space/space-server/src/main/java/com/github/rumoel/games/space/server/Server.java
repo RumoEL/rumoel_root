@@ -108,7 +108,6 @@ public class Server {
 
 	public void initGame() {
 		logger.info("initGame-start");
-		// TODO Auto-generated method stub
 		ServerHeader.getServerEngine().init();
 		logger.info("initGame-end");
 	}

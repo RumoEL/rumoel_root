@@ -8,6 +8,8 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.border.LineBorder;
 
+import lombok.Getter;
+
 public class ServerStatusFrame extends InternalFrameApi {
 	public ServerStatusFrame() {
 		super();
@@ -46,7 +48,9 @@ public class ServerStatusFrame extends InternalFrameApi {
 	}
 
 	private static final long serialVersionUID = -5619236607835983237L;
+	@Getter
 	private JTextField tfBotsConnected;
+	@Getter
 	private JTextField tfCliConnected;
 
 }

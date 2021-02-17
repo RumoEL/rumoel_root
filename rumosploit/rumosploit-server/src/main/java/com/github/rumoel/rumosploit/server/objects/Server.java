@@ -3,12 +3,14 @@ package com.github.rumoel.rumosploit.server.objects;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.InetSocketAddress;
+import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.mina.core.session.IdleStatus;
+import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactory;
 import org.slf4j.Logger;
@@ -16,8 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.github.rumoel.rumosploit.bot.BotEntity;
 import com.github.rumoel.rumosploit.bot.network.packet.PingPacket;
 import com.github.rumoel.rumosploit.server.config.ServerConfig;
+import com.github.rumoel.rumosploit.server.config.ServerStat;
 import com.github.rumoel.rumosploit.server.header.Header;
 
 import lombok.Getter;
@@ -40,6 +44,26 @@ public class Server extends Thread {
 				TimeUnit.MILLISECONDS);
 		getPingService().scheduleWithFixedDelay(Server::pingAllClients, 0, Header.getConfig().getPingDelayBots(),
 				TimeUnit.MILLISECONDS);
+
+		// send bots to clients
+		getPingService().scheduleWithFixedDelay(Server::sendAllBotsToAllClients, 0, 2000, TimeUnit.MILLISECONDS);
+
+		// send serverStat to clients
+		getPingService().scheduleWithFixedDelay(Server::sendStatToAllClients, 0, Header.getConfig().getPingDelayBots(),
+				TimeUnit.MILLISECONDS);
+	}
+
+	private static void sendStatToAllClients() {
+		Map<Long, IoSession> clients = Header.getHandlerClients().getAcceptor().getManagedSessions();
+		ServerStat stat = new ServerStat();
+
+		stat.setBotConnected(Header.getHandlerBots().getAcceptor().getManagedSessions().size());
+		stat.setClientConnected(clients.size());
+
+		for (Map.Entry<Long, IoSession> clientEntry : clients.entrySet()) {
+			IoSession clientSession = clientEntry.getValue();
+			clientSession.write(stat);
+		}
 	}
 
 	private static void pingAllBots() {
@@ -85,6 +109,27 @@ public class Server extends Thread {
 		Header.getHandlerClients().getAcceptor().setHandler(Header.getHandlerClients());
 		Header.getHandlerClients().getAcceptor().getFilterChain().addLast("codec", new ProtocolCodecFilter(oscf));
 		Header.getHandlerClients().getAcceptor().getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
+	}
+
+	private static void sendAllBotsToAllClients() {
+		Map<Long, IoSession> bots = Header.getHandlerBots().getAcceptor().getManagedSessions();
+		Map<Long, IoSession> clients = Header.getHandlerClients().getAcceptor().getManagedSessions();
+		for (Map.Entry<Long, IoSession> clientEntry : clients.entrySet()) {
+			IoSession clientSession = clientEntry.getValue();
+			for (Map.Entry<Long, IoSession> botEntry : bots.entrySet()) {
+				try {
+					IoSession botSession = botEntry.getValue();
+					BotEntity botEntity = (BotEntity) botSession.getAttribute("ENTITY");
+					if (botEntity != null) {
+						clientSession.write(botEntity);
+					} else {
+						// LOG
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	@Override

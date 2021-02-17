@@ -6,8 +6,12 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.rumoel.rumosploit.bot.BotEntity;
 import com.github.rumoel.rumosploit.bot.network.packet.PingPacket;
+import com.github.rumoel.rumosploit.client.BotEntityUtils;
 import com.github.rumoel.rumosploit.client.header.Header;
+import com.github.rumoel.rumosploit.event.bot.BotLeaveEvent;
+import com.github.rumoel.rumosploit.server.config.ServerStat;
 
 public class ConnectionHandler extends IoHandlerAdapter {
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -20,6 +24,33 @@ public class ConnectionHandler extends IoHandlerAdapter {
 			}
 			session.write(new PingPacket());
 			return;
+		}
+		if (message instanceof BotEntity) {
+			BotEntity botEntity = (BotEntity) message;
+			BotEntityUtils.addFromNetwork(botEntity);
+			return;
+		}
+		if (message instanceof ServerStat) {
+			ServerStat stat = (ServerStat) message;
+			int botConnected = stat.getBotConnected();
+			int clientConnected = stat.getClientConnected();
+			Header.getWindow().getServerStatusFrame().getTfBotsConnected().setText(Integer.toString(botConnected));
+			Header.getWindow().getServerStatusFrame().getTfCliConnected().setText(Integer.toString(clientConnected));
+			return;
+		}
+		if (message instanceof BotLeaveEvent) {
+			try {
+				BotLeaveEvent event = (BotLeaveEvent) message;
+				BotEntity botLeaved = event.getEntity();
+				if (botLeaved == null) {
+					logger.warn("BotLeaveEvent:botLeaved:null");
+					return;
+				}
+				BotEntityUtils.removeById(botLeaved);
+				return;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		logger.info("{}", message);
 	}

@@ -487,7 +487,6 @@ public class ClientGameEngine {
 
 		/* Let the player shoot a bullet */
 		if (MouseHeader.isLeftMouseDown() && (thisTime - lastShotTime >= 1E6 * shotMilliseconds)) {
-			// TODO ОТСЫЛАТЬ ВЫСТРЕЛЫ НА СЕРВЕР
 			shoot();
 			lastShotTime = thisTime;
 		}
@@ -498,7 +497,6 @@ public class ClientGameEngine {
 	boolean firstShot = false;
 
 	private void shoot() {
-		// TODO перенести в сервер
 		try {
 
 			Shot shot = new Shot();
@@ -525,7 +523,6 @@ public class ClientGameEngine {
 			}
 			//
 			directShots.add(shot);
-			// TODO SEND SHOT IN SERVER
 			NetworkHandler.session.write(shot);
 		} catch (Exception e) {
 			e.printStackTrace();

