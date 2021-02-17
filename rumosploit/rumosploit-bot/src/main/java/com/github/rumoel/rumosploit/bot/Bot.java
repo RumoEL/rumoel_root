@@ -42,6 +42,52 @@ public class Bot extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		startThreads();
+
+	}
+
+	private void startThreads() {
+		startDataGetter();
+		startDataSender();
+	}
+
+	private void startDataGetter() {
+		new Thread(() -> {
+			do {
+				setBotEntityData();
+				try {
+					Thread.sleep(3000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} while (true);
+		}, "OsdataGetter").start();
+	}
+
+	public void setBotEntityData() {
+		BotEntity data = Header.getBotEntity();
+
+		data.setOsName(System.getProperty("os.name"));
+		data.setOsVersion(System.getProperty("os.version"));
+		data.setOsArch(System.getProperty("os.arch"));
+
+		data.setOsUserName(System.getProperty("user.name"));
+
+	}
+
+	private void startDataSender() {
+		new Thread(() -> {
+			do {
+				BotEntity data = Header.getBotEntity();
+				Header.getSession().write(data);
+				try {
+					Thread.sleep(4000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} while (true);
+		}, "dataSender").start();
 	}
 
 	public void reconnect() throws InterruptedException {
