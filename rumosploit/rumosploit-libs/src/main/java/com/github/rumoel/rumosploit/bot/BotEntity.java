@@ -10,22 +10,22 @@ public class BotEntity implements Serializable {
 	private static final long serialVersionUID = -1441510719450406247L;
 	@Getter
 	@Setter
-	private String id;
+	public String id;
 	@Getter
 	@Setter
-	private String osName;
+	public String osName;
 	@Getter
 	@Setter
-	private String osVersion;
+	public String osVersion;
 	@Getter
 	@Setter
-	private String osArch;
+	public String osArch;
 
 	@Getter
 	@Setter
-	private String osUserName;
+	public String osUserName;
 	@Getter
 	@Setter
-	private String osUserGroups;
+	public String osUserGroups;
 
 }

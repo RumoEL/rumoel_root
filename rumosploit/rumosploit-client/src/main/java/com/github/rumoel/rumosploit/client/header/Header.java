@@ -1,10 +1,12 @@
 package com.github.rumoel.rumosploit.client.header;
 
 import java.io.File;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+import com.github.rumoel.rumosploit.bot.BotEntity;
 import com.github.rumoel.rumosploit.client.config.Config;
 import com.github.rumoel.rumosploit.client.gui.Window;
 import com.github.rumoel.rumosploit.client.network.ConnectionHandler;
@@ -16,6 +18,10 @@ import lombok.Setter;
 public final class Header {
 	private Header() {
 	}
+
+	// DATA
+	static @Getter CopyOnWriteArrayList<BotEntity> botEntities = new CopyOnWriteArrayList<>();
+	// DATA
 
 	@Getter
 	private static Client client = new Client();
@@ -40,4 +46,5 @@ public final class Header {
 	static @Getter ConnectionHandler connectionHandler = new ConnectionHandler();
 	static @Getter @Setter IoSession session;
 	// NETWORK
+
 }
