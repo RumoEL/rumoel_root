@@ -17,6 +17,10 @@ public class BotEntity implements Serializable {
 
 	@Getter
 	@Setter
+	public String externalIP;
+
+	@Getter
+	@Setter
 	public String osName;
 	@Getter
 	@Setter

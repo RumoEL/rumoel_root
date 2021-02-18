@@ -19,6 +19,8 @@ public class TCPHandlerBots extends IoHandlerAdapter {
 	NioSocketAcceptor acceptor = new NioSocketAcceptor();
 	static Logger logger = LoggerFactory.getLogger(TCPHandlerBots.class);
 
+	String entityAttr = "ENTITY";
+
 	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		if (message instanceof PingPacket) {
@@ -26,7 +28,11 @@ public class TCPHandlerBots extends IoHandlerAdapter {
 		}
 		if (message instanceof BotEntity) {
 			BotEntity entity = (BotEntity) message;
-			session.setAttribute("ENTITY", entity);
+			if (entity.getBotId() != null) {
+				session.setAttribute(entityAttr, entity);
+				// send to all clients
+				Header.getHandlerClients().getAcceptor().broadcast(entity);
+			}
 			return;
 		}
 		logger.info("{}", message);
@@ -44,8 +50,8 @@ public class TCPHandlerBots extends IoHandlerAdapter {
 
 	@Override
 	public void sessionClosed(IoSession session) throws Exception {
-		if (session.containsAttribute("ENTITY")) {
-			BotEntity entity = (BotEntity) session.getAttribute("ENTITY");
+		if (session.containsAttribute(entityAttr)) {
+			BotEntity entity = (BotEntity) session.getAttribute(entityAttr);
 			BotLeaveEvent botLeaveEvent = new BotLeaveEvent();
 			botLeaveEvent.setEntity(entity);
 			Header.getHandlerClients().getAcceptor().broadcast(botLeaveEvent);

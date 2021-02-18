@@ -21,7 +21,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.rumoel.rumosploit.bot.BotEntity;
 import com.github.rumoel.rumosploit.bot.network.packet.PingPacket;
 import com.github.rumoel.rumosploit.server.config.ServerConfig;
-import com.github.rumoel.rumosploit.server.config.ServerStat;
 import com.github.rumoel.rumosploit.server.header.Header;
 
 import lombok.Getter;
@@ -40,6 +39,8 @@ public class Server extends Thread {
 
 	private void startThreads() {
 		setPingService(Executors.newScheduledThreadPool(2));
+
+		// PING for clients/bots
 		getPingService().scheduleWithFixedDelay(Server::pingAllBots, 0, Header.getConfig().getPingDelayBots(),
 				TimeUnit.MILLISECONDS);
 		getPingService().scheduleWithFixedDelay(Server::pingAllClients, 0, Header.getConfig().getPingDelayBots(),
@@ -49,20 +50,18 @@ public class Server extends Thread {
 		getPingService().scheduleWithFixedDelay(Server::sendAllBotsToAllClients, 0, 2000, TimeUnit.MILLISECONDS);
 
 		// send serverStat to clients
-		getPingService().scheduleWithFixedDelay(Server::sendStatToAllClients, 0, Header.getConfig().getPingDelayBots(),
-				TimeUnit.MILLISECONDS);
+		getPingService().scheduleWithFixedDelay(Server::sendStatToAllClients, 0, 2000, TimeUnit.MILLISECONDS);
 	}
 
 	private static void sendStatToAllClients() {
 		Map<Long, IoSession> clients = Header.getHandlerClients().getAcceptor().getManagedSessions();
-		ServerStat stat = new ServerStat();
 
-		stat.setBotConnected(Header.getHandlerBots().getAcceptor().getManagedSessions().size());
-		stat.setClientConnected(clients.size());
+		Header.getStat().setBotConnected(Header.getHandlerBots().getAcceptor().getManagedSessions().size());
+		Header.getStat().setClientConnected(clients.size());
 
 		for (Map.Entry<Long, IoSession> clientEntry : clients.entrySet()) {
 			IoSession clientSession = clientEntry.getValue();
-			clientSession.write(stat);
+			clientSession.write(Header.getStat());
 		}
 	}
 
@@ -122,8 +121,6 @@ public class Server extends Thread {
 					BotEntity botEntity = (BotEntity) botSession.getAttribute("ENTITY");
 					if (botEntity != null) {
 						clientSession.write(botEntity);
-					} else {
-						// LOG
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

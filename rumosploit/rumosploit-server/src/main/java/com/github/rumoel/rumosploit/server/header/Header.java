@@ -3,6 +3,7 @@ package com.github.rumoel.rumosploit.server.header;
 import java.io.File;
 
 import com.github.rumoel.rumosploit.server.config.ServerConfig;
+import com.github.rumoel.rumosploit.server.config.ServerStat;
 import com.github.rumoel.rumosploit.server.network.bots.TCPHandlerBots;
 import com.github.rumoel.rumosploit.server.network.clients.TCPHandlerClient;
 import com.github.rumoel.rumosploit.server.objects.Server;
@@ -35,4 +36,10 @@ public final class Header {
 	@Getter
 	@Setter
 	private static ServerConfig config = new ServerConfig();
+
+	// DATA
+	@Getter
+	@Setter
+	private static ServerStat stat = new ServerStat();
+
 }

@@ -32,4 +32,10 @@ public final class Header {
 	@Getter
 	@Setter
 	private static IoSession session;
+
+	// DATA
+
+	@Getter
+	@Setter
+	public static String externalIP;
 }

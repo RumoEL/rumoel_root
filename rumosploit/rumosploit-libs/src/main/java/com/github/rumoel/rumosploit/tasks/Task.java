@@ -1,4 +1,4 @@
-package com.github.rumoel.rumosploit;
+package com.github.rumoel.rumosploit.tasks;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -12,9 +12,12 @@ public class Task implements Serializable {
 	private String id = UUID.randomUUID().toString();
 
 	public enum type {
-		READ, WRITE, EXECUTE
+		READ, WRITE, MODIFY, EXECUTE, OTHER
 	}
 
+	@Getter
+	@Setter
+	private type tasktype;
 	@Getter
 	@Setter
 	private String inputPath;
