@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.rumoel.rumosploit.bot.header.Header;
 import com.github.rumoel.rumosploit.bot.network.packet.ReadyPacket;
-import com.github.rumoel.rumosploit.tasks.Task;
-import com.github.rumoel.rumosploit.tasks.Task.type;
 import com.github.rumoel.rumosploit.utils.ExternalDataGetter;
 
 public class Bot extends Thread {
@@ -210,27 +208,6 @@ public class Bot extends Thread {
 
 		ReadyPacket ready = new ReadyPacket();
 		Header.getSession().write(ready);
-	}
-
-	public static void executeTask(Task task) {
-		type type = task.getTasktype();
-		switch (type) {
-		case READ:
-
-			break;
-		case WRITE:
-
-			break;
-		case MODIFY:
-
-			break;
-		case EXECUTE:
-
-			break;
-
-		default:
-			break;
-		}
 	}
 
 	public void reload() {

@@ -11,6 +11,8 @@ import com.github.rumoel.rumosploit.client.config.Config;
 import com.github.rumoel.rumosploit.client.gui.Window;
 import com.github.rumoel.rumosploit.client.network.ConnectionHandler;
 import com.github.rumoel.rumosploit.client.objects.Client;
+import com.github.rumoel.rumosploit.tasks.BotTask;
+import com.github.rumoel.rumosploit.tasks.BotTaskAnswer;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,8 @@ public final class Header {
 
 	// DATA
 	static @Getter CopyOnWriteArrayList<BotEntity> botEntities = new CopyOnWriteArrayList<>();
+	static @Getter CopyOnWriteArrayList<BotTask> botTasks = new CopyOnWriteArrayList<>();
+	static @Getter CopyOnWriteArrayList<BotTaskAnswer> botTaskAnswers = new CopyOnWriteArrayList<>();
 	// DATA
 
 	@Getter

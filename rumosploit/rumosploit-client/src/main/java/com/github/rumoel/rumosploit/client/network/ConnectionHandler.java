@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 import com.github.rumoel.rumosploit.bot.BotEntity;
 import com.github.rumoel.rumosploit.bot.network.packet.PingPacket;
 import com.github.rumoel.rumosploit.client.BotEntityUtils;
+import com.github.rumoel.rumosploit.client.BotTaskAnswerUtils;
 import com.github.rumoel.rumosploit.client.header.Header;
 import com.github.rumoel.rumosploit.event.bot.BotLeaveEvent;
 import com.github.rumoel.rumosploit.server.config.ServerStat;
+import com.github.rumoel.rumosploit.tasks.BotTaskAnswer;
 
 public class ConnectionHandler extends IoHandlerAdapter {
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -22,7 +24,7 @@ public class ConnectionHandler extends IoHandlerAdapter {
 			if (Header.getConfig().isDebug()) {
 				logger.info("ping");
 			}
-			session.write(new PingPacket());
+			session.write(message);
 			return;
 		}
 		if (message instanceof BotEntity) {
@@ -51,6 +53,13 @@ public class ConnectionHandler extends IoHandlerAdapter {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+
+		// ANSW
+		if (message instanceof BotTaskAnswer) {
+			BotTaskAnswer answer = (BotTaskAnswer) message;
+			BotTaskAnswerUtils.addFromNetwork(answer);
+			return;
 		}
 		logger.info("{}", message);
 	}

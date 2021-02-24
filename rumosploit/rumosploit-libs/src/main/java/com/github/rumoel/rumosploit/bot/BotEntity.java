@@ -42,4 +42,31 @@ public class BotEntity implements Serializable {
 	@Setter
 	public long pid;
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("BotEntity [botId=");
+		builder.append(botId);
+		builder.append(", machineId=");
+		builder.append(machineId);
+		builder.append(", externalIP=");
+		builder.append(externalIP);
+		builder.append(", osName=");
+		builder.append(osName);
+		builder.append(", osVersion=");
+		builder.append(osVersion);
+		builder.append(", osArch=");
+		builder.append(osArch);
+		builder.append(", hostName=");
+		builder.append(hostName);
+		builder.append(", osUserName=");
+		builder.append(osUserName);
+		builder.append(", osUserGroups=");
+		builder.append(osUserGroups);
+		builder.append(", pid=");
+		builder.append(pid);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

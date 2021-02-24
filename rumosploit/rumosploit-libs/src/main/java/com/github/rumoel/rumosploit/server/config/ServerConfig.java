@@ -7,6 +7,9 @@ public class ServerConfig {
 	@Getter
 	@Setter
 	private boolean prepare;
+	@Getter
+	@Setter
+	private boolean debug;
 
 	// RUMO
 	@Getter

@@ -11,8 +11,6 @@ import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactor
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.rumoel.rumosploit.bot.network.packet.ReadyPacket;
@@ -22,7 +20,7 @@ import com.github.rumoel.rumosploit.client.header.Header;
 public class Client extends Thread {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	public void readConfig() throws JsonGenerationException, JsonMappingException, IOException {
+	public void readConfig() throws IOException {
 		logger.info("initConfig-start");
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		// CHECK and create

@@ -61,7 +61,8 @@
 
 		<!-- LOGS -->
 		<slf4j.version>2.0.0-alpha1</slf4j.version>
-		<!-- LOGS <org.slf4j.version>2.0.0-alpha1</org.slf4j.version> -->
+		<!-- LOGS -->
+
 		<bt-version>1.9</bt-version>
 
 		<apache-common-io.version>2.6</apache-common-io.version>

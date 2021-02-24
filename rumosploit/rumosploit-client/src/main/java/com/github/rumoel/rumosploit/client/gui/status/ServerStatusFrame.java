@@ -2,7 +2,6 @@ package com.github.rumoel.rumosploit.client.gui.status;
 
 import java.awt.Color;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -13,7 +12,7 @@ import lombok.Getter;
 public class ServerStatusFrame extends InternalFrameApi {
 	public ServerStatusFrame() {
 		super();
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setTitle("ServerStatus");
 		setBorder(new LineBorder(new Color(0, 0, 0)));
 		setSize(387, 267);

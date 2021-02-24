@@ -10,18 +10,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import com.github.rumoel.rumosploit.client.gui.manage.bots.BotManagerFrame;
+import com.github.rumoel.rumosploit.client.gui.manage.bots.control.BotControlFrame;
 import com.github.rumoel.rumosploit.client.gui.status.ServerStatusFrame;
+import com.github.rumoel.rumosploit.client.gui.task.TaskFrame;
 
 import lombok.Getter;
 
 public class Window extends JFrame {
-
-	private static final long serialVersionUID = 8275620618586051674L;
-	private JDesktopPane jdpDesktop;
-	@Getter
-	private ServerStatusFrame serverStatusFrame;
-	@Getter
-	private BotManagerFrame botManagerFrame;
 
 	public Window() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,10 +49,32 @@ public class Window extends JFrame {
 		serverStatusFrame.setVisible(true);
 		jdpDesktop.add(serverStatusFrame);
 
+		botControlFrame = new BotControlFrame();
+		this.botControlFrame.getTxtCmd().setEditable(true);
+		botControlFrame.setLocation(374, 26);
+		botControlFrame.setVisible(true);
+		jdpDesktop.add(botControlFrame);
+
 		botManagerFrame = new BotManagerFrame();
-		botManagerFrame.setLocation(188, 36);
+		this.botManagerFrame.setBounds(135, 107, 463, 454);
+		this.jdpDesktop.add(this.botManagerFrame);
 		botManagerFrame.setVisible(true);
-		jdpDesktop.add(botManagerFrame);
+
+		taskFrame = new TaskFrame();
+		taskFrame.setLocation(100, 100);
+		this.jdpDesktop.add(this.taskFrame);
+		taskFrame.setVisible(true);
 	}
 
+	private static final long serialVersionUID = 8275620618586051674L;
+	private JDesktopPane jdpDesktop;
+	@Getter
+	private ServerStatusFrame serverStatusFrame;
+	@Getter
+	private BotManagerFrame botManagerFrame;
+	@Getter
+	private BotControlFrame botControlFrame;
+
+	@Getter
+	private TaskFrame taskFrame;
 }

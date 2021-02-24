@@ -40,7 +40,7 @@ public class BotManagerFrame extends InternalFrameApi {
 
 	private static final long serialVersionUID = -2148690316316207764L;
 	@Getter
-	private TableModel model;
+	private transient TableModel model;
 	@Getter
 	private JTable tableBots;
 

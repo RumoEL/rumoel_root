@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 public class Sites {
+	private Sites() {
+	}
 
 	public static String getStringFromUrl(URL url) throws IOException {
 		String ip;
