@@ -10,6 +10,7 @@
 	<artifactId>space</artifactId>
 	<packaging>pom</packaging>
 	<modules>
+		<module>space-libs</module>
 		<module>space-client</module>
 		<module>space-server</module>
 	</modules>
@@ -24,11 +25,6 @@
 
 
 
-		<dependency>
-			<groupId>com.github.rumoel.libs.games</groupId>
-			<artifactId>games-libs-space</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 
 
 		<dependency>

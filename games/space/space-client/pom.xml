@@ -63,9 +63,10 @@
 	</dependencyManagement>
 
 	<dependencies>
+
 		<dependency>
-			<groupId>com.github.rumoel.libs.games</groupId>
-			<artifactId>games-libs-space</artifactId>
+			<groupId>com.github.rumoel.rumoel.games.space</groupId>
+			<artifactId>space-libs</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 

@@ -2,14 +2,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
-		<groupId>com.github.rumoel.libs</groupId>
-		<artifactId>games-libs</artifactId>
+		<groupId>com.github.rumoel.rumoel.games</groupId>
+		<artifactId>space</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>com.github.rumoel.libs.games</groupId>
-	<artifactId>games-libs-space</artifactId>
-
+	<groupId>com.github.rumoel.rumoel.games.space</groupId>
+	<artifactId>space-libs</artifactId>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
