@@ -1,23 +1,18 @@
-package com.github.rumoel.pas.bittorrentspy.dht2;
+package com.github.rumoel.pas.bittorrentspy.v2.trackers.impl;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
-import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.rumoel.pas.bittorrentspy.dht.MagnetLinkFileReader;
 import com.github.rumoel.pas.bittorrentspy.dht.PeerStats;
 import com.github.rumoel.pas.bittorrentspy.dht.StatsDumper;
+import com.github.rumoel.pas.bittorrentspy.v2.header.Header;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 
@@ -32,30 +27,21 @@ import bt.runtime.BtClient;
 import bt.runtime.BtRuntime;
 import bt.runtime.Config;
 
-public class DhtCliTracker extends Thread {
+public class TrackerDHT extends Tracker {
+	private static FileSystem FS = Jimfs.newFileSystem(Configuration.unix());
+	private static BtRuntime RUNTIME = createRuntime();
+	private final ConcurrentHashMap<TorrentId, PeerStats> STATS = new ConcurrentHashMap<>();
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DhtCliTracker.class);
-
-	private static FileSystem FS;
-	private static BtRuntime RUNTIME;
-	private static Map<TorrentId, PeerStats> STATS;
-	private static ScheduledExecutorService STATS_WRITER;
-
-	private static final long STATS_DUMP_INTERVAL_SECONDS = 15;
-
-	Object dumper2;
-
+	private static ScheduledExecutorService STATS_WRITER = Executors.newSingleThreadScheduledExecutor(r -> {
+		Thread t = new Thread(r);
+		t.setDaemon(true);
+		return t;
+	});
 	CopyOnWriteArrayList<BtClient> btClients = new CopyOnWriteArrayList<>();
+	StatsDumper dumper = new StatsDumper(System.currentTimeMillis());
 
+	@Override
 	public void init() {
-		FS = Jimfs.newFileSystem(Configuration.unix());
-		RUNTIME = createRuntime();
-		STATS = new ConcurrentHashMap<>();
-		STATS_WRITER = Executors.newSingleThreadScheduledExecutor(r -> {
-			Thread t = new Thread(r);
-			t.setDaemon(true);
-			return t;
-		});
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			try {
 				STATS_WRITER.shutdownNow();
@@ -68,24 +54,37 @@ public class DhtCliTracker extends Thread {
 				e.printStackTrace();
 			}
 		}));
+		//
+		try {
+			if (!Header.getConfig().getTorrentsMagnets().exists()) {
+				Header.getConfig().getTorrentsMagnets().getParentFile().mkdirs();
+			}
+			logger.info("magnets file[{}] is created:{}", Header.getConfig().getTorrentsMagnets().getAbsolutePath(),
+					Header.getConfig().getTorrentsMagnets().createNewFile());
 
-		Collection<MagnetUri> magnets = new MagnetLinkFileReader().readFromFile("FILE");
-		for (MagnetUri magnetUri : magnets) {
-			LOGGER.info("Creating client for info hash: {}", magnetUri.getTorrentId());
+			Header.getMagnetUris().addAll(
+					new MagnetLinkFileReader().readFromFile(Header.getConfig().getTorrentsMagnets().getAbsolutePath()));
+		} catch (Exception e2) {
+			logger.error("read", e2);
+		}
+
+		// new MagnetLinkFileReader().readFromFile("FILE");
+		for (MagnetUri magnetUri : Header.getMagnetUris()) {
+			getLogger().info("Creating client for info hash: {}", magnetUri.getTorrentId());
 			attachPeerListener(RUNTIME, magnetUri.getTorrentId());
 			btClients.add(createClient(RUNTIME, magnetUri));
 		}
-
-		StatsDumper dumper = new StatsDumper(System.currentTimeMillis());
-		LOGGER.info("Scheduling stats dump every {} seconds...", STATS_DUMP_INTERVAL_SECONDS);
-		STATS_WRITER.scheduleWithFixedDelay(() -> dumper.dumpStats(STATS), STATS_DUMP_INTERVAL_SECONDS,
-				STATS_DUMP_INTERVAL_SECONDS, TimeUnit.SECONDS);
-
 	}
 
 	@Override
-	public void run() {
-		LOGGER.info("Starting clients...");
+	public void dump() {
+		dumper.dumpStats(STATS);
+		STATS.clear();
+	}
+
+	@Override
+	public boolean startTr() {
+		getLogger().info("Starting clients...");
 		CopyOnWriteArrayList<CompletableFuture<?>> futures = new CopyOnWriteArrayList<>();
 
 		for (BtClient btClient : btClients) {
@@ -93,25 +92,21 @@ public class DhtCliTracker extends Thread {
 		}
 
 		CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).join();
+
+		return true;
 	}
 
-	public void startDumper() {
-		// FIXME
-		((Thread) dumper2).start();
-	}
-
-	//
-	private static BtClient createClient(BtRuntime runtime, MagnetUri magnetUri) {
-		Storage storage = new FileSystemStorage(FS.getPath("/" + UUID.randomUUID()));
-		return Bt.client(runtime).magnet(magnetUri).storage(storage).initEagerly().build();
-	}
-
-	private static void attachPeerListener(BtRuntime runtime, TorrentId torrentId) {
+	private void attachPeerListener(BtRuntime runtime, TorrentId torrentId) {
 		PeerStats perTorrentStats = STATS.computeIfAbsent(torrentId, it -> new PeerStats());
 		runtime.getEventSource().onPeerDiscovered(perTorrentStats::onPeerDiscovered)
 				.onPeerConnected(perTorrentStats::onPeerConnected)
 				.onPeerDisconnected(perTorrentStats::onPeerDisconnected)
 				.onPeerBitfieldUpdated(perTorrentStats::onPeerBitfieldUpdated);
+	}
+
+	private static BtClient createClient(BtRuntime runtime, MagnetUri magnetUri) {
+		Storage storage = new FileSystemStorage(FS.getPath("/" + UUID.randomUUID()));
+		return Bt.client(runtime).magnet(magnetUri).storage(storage).initEagerly().build();
 	}
 
 	private static BtRuntime createRuntime() {
@@ -120,7 +115,11 @@ public class DhtCliTracker extends Thread {
 		Config config2 = new Config();
 		config2.setMaxConcurrentlyActivePeerConnectionsPerTorrent(0);
 
-		Config config = new Config() {
+		Config mainConfig = new Config() {
+			@Override
+			public int getAcceptorPort() {
+				return Header.getConfig().getUdpTcpTrackerPort();
+			}
 
 			@Override
 			public int getMaxPeerConnections() {
@@ -135,11 +134,17 @@ public class DhtCliTracker extends Thread {
 
 		DHTModule dhtModule = new DHTModule(new DHTConfig() {
 			@Override
+			public int getListeningPort() {
+				return Header.getConfig().getDhtTrackerPort();
+			}
+
+			@Override
 			public boolean shouldUseRouterBootstrap() {
 				return true;
 			}
 		});
 
-		return BtRuntime.builder(config).autoLoadModules().module(dhtModule).build();
+		return BtRuntime.builder(mainConfig).autoLoadModules().module(dhtModule).build();
 	}
+
 }

@@ -23,7 +23,7 @@ import com.turn.ttorrent.tracker.Tracker;
 public class PASBittorrentSpyInit extends Thread {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
-	Tracker tracker;
+	Tracker trackerHttp;
 
 	public static void main(String[] args) throws IOException {
 		PASBittorrentSpyHeader.getPasBittorrentSpyInit().readConfig();
@@ -35,8 +35,8 @@ public class PASBittorrentSpyInit extends Thread {
 	@Override
 	public void run() {
 		do {
-			if (tracker != null) {
-				Collection<TrackedTorrent> trackedTorrents = tracker.getTrackedTorrents();
+			if (trackerHttp != null) {
+				Collection<TrackedTorrent> trackedTorrents = trackerHttp.getTrackedTorrents();
 				for (TrackedTorrent trackedTorrent : trackedTorrents) {
 					Map<PeerUID, TrackedPeer> trackedPeers = trackedTorrent.getPeers();
 					for (Map.Entry<PeerUID, TrackedPeer> trackedPeerEntry : trackedPeers.entrySet()) {
@@ -65,14 +65,14 @@ public class PASBittorrentSpyInit extends Thread {
 	}
 
 	private void startTracker() throws IOException {
-		tracker.start(true);
+		trackerHttp.start(true);
 		start();
 	}
 
 	private void initTracker() throws IOException {
 		// HTTP
-		tracker = new Tracker(Tracker.DEFAULT_TRACKER_PORT);
-		tracker.setAcceptForeignTorrents(true);
+		trackerHttp = new Tracker(PASBittorrentSpyHeader.getConfig().getHttpTrackerPort());
+		trackerHttp.setAcceptForeignTorrents(true);
 		// HTTP
 		// DHT
 		// DHT
@@ -92,7 +92,7 @@ public class PASBittorrentSpyInit extends Thread {
 
 		for (File f : PASBittorrentSpyHeader.getConfig().getTorrentsDir().listFiles(filter)) {
 			logger.info("_____________________________________");
-			tracker.announce(TrackedTorrent.load(f));
+			trackerHttp.announce(TrackedTorrent.load(f));
 			logger.info("torrent: {} is loaded", f.getName());
 			logger.info("_____________________________________");
 		}

@@ -10,7 +10,6 @@
 	<artifactId>bittorrentspy</artifactId>
 
 
-
 	<dependencies>
 		<dependency>
 			<groupId>com.github.rumoel.rumoel.libs.pas</groupId>

@@ -16,13 +16,8 @@
 
 package com.github.rumoel.pas.bittorrentspy.dht;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,60 +37,39 @@ public class StatsDumper {
 	}
 
 	public void dumpStats(Map<TorrentId, PeerStats> aggregateStats) {
-		long t1 = System.nanoTime();
-
-		File tempFile = null;
 		try {
-			tempFile = File.createTempFile(UUID.randomUUID().toString(), ".tmp");
-			try (BufferedWriter w = new BufferedWriter(new FileWriter(tempFile))) {
-				w.write(String.format("Uptime: %s", Duration.ofMillis(System.currentTimeMillis() - startedAt)));
-				w.newLine();
-				w.newLine();
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder
+					.append(String.format("Uptime: %s", Duration.ofMillis(System.currentTimeMillis() - startedAt)));
+			stringBuilder.append('\n').append('\n');
 
-				for (Map.Entry<TorrentId, PeerStats> e : aggregateStats.entrySet()) {
-					TorrentId torrentId = e.getKey();
-					PeerStats stats = e.getValue();
-					Map<Peer, PeerStats.Counter> counters = stats.getCounters();
+			for (Map.Entry<TorrentId, PeerStats> e : aggregateStats.entrySet()) {
+				TorrentId torrentId = e.getKey();
+				PeerStats stats = e.getValue();
+				Map<Peer, PeerStats.Counter> counters = stats.getCounters();
 
-					w.write(String.format("[%s]\ttotal known peers: %6d", torrentId, counters.size()));
-					w.newLine();
-					for (Map.Entry<Peer, PeerStats.Counter> e2 : counters.entrySet()) {
-						Peer peer = e2.getKey();
-						PeerStats.Counter counter = e2.getValue();
+				stringBuilder.append(String.format("[%s]\ttotal known peers: %6d", torrentId, counters.size()))
+						.append('\n');
+				for (Map.Entry<Peer, PeerStats.Counter> e2 : counters.entrySet()) {
+					Peer peer = e2.getKey();
+					PeerStats.Counter counter = e2.getValue();
 
-						long discovered = counter.getDiscoveredTimes();
-						long connected = counter.getConnectedTimes();
-						long disconnected = counter.getDisconnectedTimes();
-						String available = (connected == 0) ? "-" : getAvailableDataPercentage(counter) + "%";
+					long discovered = counter.getDiscoveredTimes();
+					long connected = counter.getConnectedTimes();
+					long disconnected = counter.getDisconnectedTimes();
+					String available = (connected == 0) ? "-" : getAvailableDataPercentage(counter) + "%";
 
-						w.write(String.format(
-								"\t(%50s)\tdata available: %4s\ttimes discovered: %6d,\ttimes connected: %6d,\ttimes disconnected: %6d",
-								peer, available, discovered, connected, disconnected));
-						w.newLine();
-					}
-					w.newLine();
-					w.newLine();
+					stringBuilder.append(String.format(
+							"\t(%50s)\tdata available: %4s\ttimes discovered: %6d,\ttimes connected: %6d,\ttimes disconnected: %6d",
+							peer, available, discovered, connected, disconnected)).append('\n');
 				}
+				stringBuilder.append('\n').append('\n');
 			}
 
-			File currentFile = new File(DUMP_PATH);
-			if (!currentFile.exists() || currentFile.delete()) {
-				if (tempFile.renameTo(currentFile)) {
-					LOGGER.info("Dumped stats to {} in {} ms", DUMP_PATH, (System.nanoTime() - t1) / 1_000_000);
-				} else {
-					LOGGER.warn("Failed to move temp file {} to {}", tempFile.getPath(), DUMP_PATH);
-				}
-			} else {
-				LOGGER.warn("Failed to delete previous dump, will not replace: {}", DUMP_PATH);
-			}
-
-		} catch (IOException e) {
+			LOGGER.info("{}", stringBuilder);
+		} catch (Exception e) {
 			LOGGER.error("Failed to dump stats to: " + DUMP_PATH, e);
 			throw new RuntimeException(e);
-		} finally {
-			if (tempFile != null) {
-				tempFile.delete();
-			}
 		}
 	}
 
