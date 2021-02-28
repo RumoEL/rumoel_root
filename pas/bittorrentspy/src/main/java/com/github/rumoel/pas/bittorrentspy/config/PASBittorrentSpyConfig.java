@@ -42,12 +42,4 @@ public class PASBittorrentSpyConfig {
 			new InetSocketAddress("dht.transmissionbt.com", 6881), new InetSocketAddress("router.utorrent.com", 6881),
 			new InetSocketAddress("dht.aelitis.com", 6881)));
 
-	enum EnumA {
-		FIRST, SECOND, THIRD
-	}
-
-	enum EnumB {
-		FIRST, SECOND, THIRD
-	}
-
 }

@@ -134,11 +134,7 @@ public class TrackerDHT extends TrackerObj {
 			}
 		};
 
-		CopyOnWriteArrayList<InetSocketAddress> bootstrapNodesFromConfig = Header.getConfig().getBootstrapNodes();
-		CopyOnWriteArrayList<InetPeerAddress> bootstrapNodes = castTypes(bootstrapNodesFromConfig);
-		for (InetPeerAddress inetPeerAddress : bootstrapNodes) {
-			System.err.println(inetPeerAddress);
-		}
+		CopyOnWriteArrayList<InetPeerAddress> bootstrapNodes = castTypes(Header.getConfig().getBootstrapNodes());
 
 		DHTConfig dhtConfig = new DHTConfig() {
 			@Override
@@ -163,7 +159,10 @@ public class TrackerDHT extends TrackerObj {
 	}
 
 	private static CopyOnWriteArrayList<InetPeerAddress> castTypes(CopyOnWriteArrayList<InetSocketAddress> input) {
-		CopyOnWriteArrayList<InetPeerAddress> ret = new CopyOnWriteArrayList<InetPeerAddress>();
+		CopyOnWriteArrayList<InetPeerAddress> ret = new CopyOnWriteArrayList<>();
+		if (input == null) {
+			return ret;
+		}
 		for (InetSocketAddress inetSocketAddress : input) {
 			ret.add(new InetPeerAddress(inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
 		}
