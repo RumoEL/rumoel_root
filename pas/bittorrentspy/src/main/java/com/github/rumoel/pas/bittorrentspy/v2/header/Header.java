@@ -23,7 +23,10 @@ public final class Header {
 	@Getter
 	private static final CopyOnWriteArrayList<MagnetUri> magnetUris = new CopyOnWriteArrayList<>();
 	@Getter
-	private static final File configFile = new File("config.yml");
+	public static final File ROOTDIR = new File(new File(new File("rumoel"), "pas"), "bittorrentspy");
+
+	@Getter
+	private static final File configFile = new File(ROOTDIR, "config.yml");
 
 	@Getter
 	@Setter

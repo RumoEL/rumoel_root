@@ -82,9 +82,8 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
-					<!-- build a -->
 					<execution>
-						<id>build-a</id>
+						<id>build-v1</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
@@ -98,10 +97,27 @@
 							<descriptorRefs>
 								<descriptorRef>jar-with-dependencies</descriptorRef>
 							</descriptorRefs>
-							<finalName>${project.artifactId}-${project.version}+git-${git.commit.id.full}</finalName>
+							<finalName>${project.artifactId}-V1-${project.version}+git-${git.commit.id.full}</finalName>
 						</configuration>
 					</execution>
-					<!-- build b -->
+					<execution>
+						<id>build-v2</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>com.github.rumoel.pas.bittorrentspy.v2.init.PBSInit</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<finalName>${project.artifactId}-V2-${project.version}+git-${git.commit.id.full}</finalName>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

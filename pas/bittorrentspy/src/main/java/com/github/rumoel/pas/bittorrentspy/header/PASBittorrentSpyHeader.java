@@ -17,7 +17,7 @@ public class PASBittorrentSpyHeader {
 	private static PASBittorrentSpyInit pasBittorrentSpyInit = new PASBittorrentSpyInit();
 
 	@Getter
-	public static final File ROOTDIR = new File("rumoel_pas_bittorrentspy");
+	public static final File ROOTDIR = new File(new File(new File("rumoel"), "pas"), "bittorrentspy");
 
 	@Getter
 	public static final File CONFIGFILE = new File(ROOTDIR, "config.yml");

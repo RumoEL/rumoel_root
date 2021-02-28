@@ -1,18 +1,19 @@
 package com.github.rumoel.pas.bittorrentspy.v2.trackers.impl;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.file.FileSystem;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import com.github.rumoel.pas.bittorrentspy.dht.MagnetLinkFileReader;
 import com.github.rumoel.pas.bittorrentspy.dht.PeerStats;
 import com.github.rumoel.pas.bittorrentspy.dht.StatsDumper;
 import com.github.rumoel.pas.bittorrentspy.v2.header.Header;
+import com.github.rumoel.pas.bittorrentspy.v2.trackers.TrackerObj;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 
@@ -23,20 +24,16 @@ import bt.dht.DHTConfig;
 import bt.dht.DHTModule;
 import bt.magnet.MagnetUri;
 import bt.metainfo.TorrentId;
+import bt.net.InetPeerAddress;
 import bt.runtime.BtClient;
 import bt.runtime.BtRuntime;
 import bt.runtime.Config;
 
-public class TrackerDHT extends Tracker {
-	private static FileSystem FS = Jimfs.newFileSystem(Configuration.unix());
-	private static BtRuntime RUNTIME = createRuntime();
+public class TrackerDHT extends TrackerObj {
+	private static final FileSystem FS = Jimfs.newFileSystem(Configuration.unix());
+	private static final BtRuntime RUNTIME = createRuntime();
 	private final ConcurrentHashMap<TorrentId, PeerStats> STATS = new ConcurrentHashMap<>();
 
-	private static ScheduledExecutorService STATS_WRITER = Executors.newSingleThreadScheduledExecutor(r -> {
-		Thread t = new Thread(r);
-		t.setDaemon(true);
-		return t;
-	});
 	CopyOnWriteArrayList<BtClient> btClients = new CopyOnWriteArrayList<>();
 	StatsDumper dumper = new StatsDumper(System.currentTimeMillis());
 
@@ -44,36 +41,44 @@ public class TrackerDHT extends Tracker {
 	public void init() {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			try {
-				STATS_WRITER.shutdownNow();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
 				FS.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}));
-		//
+
+		readTorrents();
+		readMagnets();
+
+	}
+
+	private void readMagnets() {
 		try {
 			if (!Header.getConfig().getTorrentsMagnets().exists()) {
 				Header.getConfig().getTorrentsMagnets().getParentFile().mkdirs();
 			}
-			logger.info("magnets file[{}] is created:{}", Header.getConfig().getTorrentsMagnets().getAbsolutePath(),
+			getLogger().info("magnets file[{}] is created:{}",
+					Header.getConfig().getTorrentsMagnets().getAbsolutePath(),
 					Header.getConfig().getTorrentsMagnets().createNewFile());
 
 			Header.getMagnetUris().addAll(
 					new MagnetLinkFileReader().readFromFile(Header.getConfig().getTorrentsMagnets().getAbsolutePath()));
 		} catch (Exception e2) {
-			logger.error("read", e2);
+			getLogger().error("read", e2);
 		}
-
-		// new MagnetLinkFileReader().readFromFile("FILE");
 		for (MagnetUri magnetUri : Header.getMagnetUris()) {
 			getLogger().info("Creating client for info hash: {}", magnetUri.getTorrentId());
 			attachPeerListener(RUNTIME, magnetUri.getTorrentId());
 			btClients.add(createClient(RUNTIME, magnetUri));
 		}
+	}
+
+	private void readTorrents() {
+		if (!Header.getConfig().getTorrentsDir().exists()) {
+			getLogger().info("torrent dir {} is created:{}", Header.getConfig().getTorrentsDir(),
+					Header.getConfig().getTorrentsDir().mkdirs());
+		}
+
 	}
 
 	@Override
@@ -110,12 +115,9 @@ public class TrackerDHT extends Tracker {
 	}
 
 	private static BtRuntime createRuntime() {
-		final int MAX_PEER_CONNECTIONS = 5000;
-
-		Config config2 = new Config();
-		config2.setMaxConcurrentlyActivePeerConnectionsPerTorrent(0);
 
 		Config mainConfig = new Config() {
+
 			@Override
 			public int getAcceptorPort() {
 				return Header.getConfig().getUdpTcpTrackerPort();
@@ -123,16 +125,27 @@ public class TrackerDHT extends Tracker {
 
 			@Override
 			public int getMaxPeerConnections() {
-				return MAX_PEER_CONNECTIONS;
+				return Header.getConfig().getMaxPeerConnections();
 			}
 
 			@Override
 			public int getMaxPeerConnectionsPerTorrent() {
-				return MAX_PEER_CONNECTIONS;
+				return Header.getConfig().getMaxPeerConnections();
 			}
 		};
 
-		DHTModule dhtModule = new DHTModule(new DHTConfig() {
+		CopyOnWriteArrayList<InetSocketAddress> bootstrapNodesFromConfig = Header.getConfig().getBootstrapNodes();
+		CopyOnWriteArrayList<InetPeerAddress> bootstrapNodes = castTypes(bootstrapNodesFromConfig);
+		for (InetPeerAddress inetPeerAddress : bootstrapNodes) {
+			System.err.println(inetPeerAddress);
+		}
+
+		DHTConfig dhtConfig = new DHTConfig() {
+			@Override
+			public Collection<InetPeerAddress> getBootstrapNodes() {
+				return bootstrapNodes;
+			}
+
 			@Override
 			public int getListeningPort() {
 				return Header.getConfig().getDhtTrackerPort();
@@ -142,9 +155,19 @@ public class TrackerDHT extends Tracker {
 			public boolean shouldUseRouterBootstrap() {
 				return true;
 			}
-		});
+		};
+
+		DHTModule dhtModule = new DHTModule(dhtConfig);
 
 		return BtRuntime.builder(mainConfig).autoLoadModules().module(dhtModule).build();
+	}
+
+	private static CopyOnWriteArrayList<InetPeerAddress> castTypes(CopyOnWriteArrayList<InetSocketAddress> input) {
+		CopyOnWriteArrayList<InetPeerAddress> ret = new CopyOnWriteArrayList<InetPeerAddress>();
+		for (InetSocketAddress inetSocketAddress : input) {
+			ret.add(new InetPeerAddress(inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
+		}
+		return ret;
 	}
 
 }

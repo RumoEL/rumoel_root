@@ -8,19 +8,17 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.rumoel.pas.bittorrentspy.v2.trackers.impl.Tracker;
-
 import lombok.Getter;
 
 public class TrackerHandler extends Thread {
 	@Getter
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	CopyOnWriteArrayList<Tracker> trackers = new CopyOnWriteArrayList<>();
+	CopyOnWriteArrayList<TrackerObj> trackers = new CopyOnWriteArrayList<>();
 
 	ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
 
-	public void add(Tracker tracker) {
+	public void add(TrackerObj tracker) {
 		if (!trackers.contains(tracker)) {
 			if (!tracker.getHandlers().contains(this)) {
 				tracker.getHandlers().add(this);
@@ -30,14 +28,14 @@ public class TrackerHandler extends Thread {
 	}
 
 	public void init() {
-		for (Tracker tracker : trackers) {
+		for (TrackerObj tracker : trackers) {
 			tracker.init();
 		}
 	}
 
 	@Override
 	public void run() {
-		for (Tracker tracker : trackers) {
+		for (TrackerObj tracker : trackers) {
 			logger.info("tracker{} is started:{}", tracker.getClass().getSimpleName(), tracker.startTr());
 
 			int statsDumpIntervalSecond = 10;

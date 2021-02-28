@@ -1,16 +1,13 @@
-package com.github.rumoel.pas.bittorrentspy.v2.trackers.impl;
+package com.github.rumoel.pas.bittorrentspy.v2.trackers;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.rumoel.pas.bittorrentspy.v2.trackers.TrackerHandler;
-import com.github.rumoel.pas.bittorrentspy.v2.trackers.TrackerInterface;
-
 import lombok.Getter;
 
-public class Tracker implements TrackerInterface {
+public class TrackerObj implements TrackerInterface {
 	@Getter
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Getter
